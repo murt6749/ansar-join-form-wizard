@@ -6,6 +6,21 @@ export const om = {
     terms: "Haala",
     application: "Iyyannoo"
   },
+  cookies: {
+    title: "Hayyama Kookii",
+    message: "Iyyannoo kee qabuu fi muuxannoo kee fooyyessuuf kookii fayyadamna. Itti fuufuudhaan, kookii fayyadamuuf hayyama kennita.",
+    accept: "Fudhadhu",
+    decline: "Didduu"
+  },
+  draft: {
+    saved: "Qabatamee kadhame!",
+    restored: "Qabatameen deebifame",
+    clear: "Qabatame Qulqulleessi"
+  },
+  payment: {
+    notice: "💰 Bilisaan Iyyannoo - $0.00",
+    description: "Iyyannoon kun guutumaan guutuutti bilisaa dha. Kaffaltiin hin barbaachisu."
+  },
   applicationForm: {
     title: "Ansaar Dargaggoota Waliin Makamuu",
     subtitle: "Iyyannoo Dhaabbata Islaamii Ogummaa",
@@ -52,7 +67,8 @@ export const om = {
       final: "Kutaa Dhumaa →",
       submit: "Iyyannoo Ergi ✨",
       submitting: "Ergaa jira...",
-      returnHome: "Gara Manatti Deebi'i"
+      returnHome: "Gara Manatti Deebi'i",
+      saveDraft: "💾 Qabatame Olkaa'i"
     },
     success: {
       title: "Iyyannoon Milkaa'inaan Ergame!",
@@ -63,6 +79,48 @@ export const om = {
     validation: {
       required: "Kun barbaachisaa dha",
       selectAtLeastOne: "Yoo xiqqaate bakka tokko filadhu"
+    }
+  },
+  privacy: {
+    title: "Sirna Icciitii",
+    subtitle: "Dhaabbata Ansaar Dargaggoota",
+    sections: {
+      infoWeCollect: "Odeeffannoo Nu Walitti Qabnu",
+      howWeUse: "Akkamitti Odeeffannoo Kee Fayyadamnu",
+      infoSharing: "Odeeffannoo Qooduun",
+      dataSecurity: "Nageenyaa Daataa",
+      yourRights: "Mirga Kee",
+      contactUs: "Nu Qunnamaa"
+    },
+    content: {
+      infoWeCollect: "Yeroo Ansaar Dargaggoota makamuu iyyannuuf, odeeffannoo dhuunfaa (maqaa, umurii, saala, bakka), odeeffannoo qunnamtii (email, lakkoofsa bilbilaa, maqaa fayyadamaa Telegram), odeeffannoo waa'ee fedhii fi dandeettii keetii, yeroo fi filannoo hojii keetii, fi kaka'umsa hafuura qulqulluu fi sababa makamuu keetii walitti qabna.",
+      howWeUse: "Odeeffannoo kee iyyannoo kee ilaaluu fi adeemsisuu, haala iyyannoo kee irratti si qunnamuuf, carraa tattaaffii mijaawaa si argatuuf, qabeenya qunnamtii hariiroo keessatti si dabaluuf (hayyama keetiin), fi qophii barnoota Islaamaa fi gochaalee argamsiisaa qindoomsuu.",
+      infoSharing: "Odeeffannoo dhuunfaa kee namoota alaa hin gurgurru, wal hin jijjiirru, ykn karaa biraatiin hin kenninu. Odeeffannoo kee bulchitoota Ansaar Dargaggoota fi hoogganoota garee qophii hojii tattaaffii fi gochaalee argamsiisaa Islaamaa qindoomsuuf barbaadan qofaaf ni argama.",
+      dataSecurity: "Odeeffannoo dhuunfaa kee seera malee argachuu, jijjiirachuu, saaxiluu, ykn balleessuu irraa eeguuf tarkaanfii nageenyaa mijaawe hojiirra oolchina. Daataan kee haala nageenya qabaatuun kuufama kan argamaanis qofa namoota hayyama qabaniif tahuu.",
+      yourRights: "Odeeffannoo dhuunfaa keetii argachuu, odeeffannoo sirrii hin taane sirreessu gaafachuu, odeeffannoo kee haquu gaafachuu, fi yeroo kamiyyuu gochaalee tattaaffii irraa of baasuu dandeessa.",
+      contactUs: "Waa'ee Sirna Icciitii kanaa gaaffii yoo qabaatte ykn mirga kee fayyadamuu barbaadde, maaloo karaalee qunnamtii ofiisaa keenyaan nu qunnamaa."
+    }
+  },
+  terms: {
+    title: "Haala Tajaajilaa",
+    subtitle: "Dhaabbata Ansaar Dargaggoota",
+    sections: {
+      volunteerAgreement: "Waliigaltee Tattaaffii",
+      commitmentResponsibilities: "Kutannaa fi Itti Gaafatamummaa",
+      codeOfConduct: "Seera Amala",
+      intellectualProperty: "Qabeenya Sammuu",
+      termination: "Xumuura",
+      disclaimer: "Ibsa Itti Gaafatamummaa",
+      islamicPrinciples: "Seera Islaamaa"
+    },
+    content: {
+      volunteerAgreement: "Ansaar Dargaggoota makamuu iyyannuudhaan, yeroo fi dandeettii kee akkaataa seera Islaamaatiin fi kaayyoo dhaabbata keenyaa beekumsa Islaamaa babal'isuu fi hawaasa Muslimaa deeggaruu waliin walsimsiisuun kennuuf waliigalta.",
+      commitmentResponsibilities: "Sa'aatii fi itti gaafatamummaa iyyannoo kee keessatti agarsiiste kutannaadhaan raawwachuu, hojiiwwan kennaman kutannaa fi naamusa Islaamaatiin hirmaachuu, miseensota garee waliin kabajaan walqunnamuu, gochaalee dhaabbataa hunda keessatti qajeelfama Islaamaa hordofuu, fi walqunnamtii hunda keessatti Ansaar Dargaggoota haala gaariitiin bakka bu'uu.",
+      codeOfConduct: "Gochaaleen hundi gatii fi barnoota Islaamaa waliin walsimsisuu qaba, namoota hundaaf kabaja duubdeebii osoo hin ilaalin, qunnamtii ogummaa fi kabajaa, icciitii odeeffannoo dhaabbataa dhoksaa, fi qabiyyee seera Islaamaatiin mormuun hin beeksisinu.",
+      intellectualProperty: "Qabiyyeen akka kutaa gochaalee Ansaar Dargaggoota uumamu kaayyoo argamsiisaa Islaamaa dhaabbataatiif fayyadama. Gumaachitoota akka mijaawuutti ni galateeffama, qabiyyeen hundi akkaataa qajeelfama Islaamaatiin eeyyamamuun qaba.",
+      termination: "Kutaan lamaan yeroo kamiyyuu hariiroo tattaaffii xumuuru danda'a. Seera Islaamaa ykn seera amala keenya hin hordofne tattaaffitoota of irraa fageesuuf mirga qabna.",
+      disclaimer: "Ansaar Dargaggoota dhaabbata tattaaffii irratti hundaa'e Islaamaa dha. Gochaalee keenya keessatti gaarii ta'uu yaaltus, tattaaffitooni fedhii fi itti gaafatamummaa ofii isaaniitiin hirmaatu.",
+      islamicPrinciples: "Gochaaleen fi qunnamtiin Ansaar Dargaggoota keessa hundi barnoota fi gatii Islaamaa hordofuu qaba. Carraaqqii keenya hunda keessatti kallatii Waaqaa barbaadna, tajaajila hawaasa Muslimaadhaan gammachuu isaa argachuuf carraaqqina."
     }
   }
 };

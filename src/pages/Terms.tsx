@@ -1,20 +1,46 @@
+
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/hooks/useLanguage';
+import { languages, type Language } from '@/translations';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Globe } from 'lucide-react';
 
 const Terms = () => {
+  const { currentLanguage, changeLanguage, t } = useLanguage();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       {/* Navigation */}
       <nav className="container mx-auto px-4 py-4 mb-8">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <Link to="/" className="text-2xl font-bold text-green-800 hover:text-green-900 transition-colors">
-            ← Ansar Youth
+            {t.navigation.home}
           </Link>
-          <div className="space-x-4">
-            <Link to="/application" className="text-green-700 hover:text-green-800 transition-colors">Application</Link>
-            <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">Privacy</Link>
+          <div className="flex items-center space-x-4">
+            {/* Language Toggle */}
+            <div className="flex items-center space-x-2">
+              <Globe className="h-4 w-4 text-green-700" />
+              <Select value={currentLanguage} onValueChange={(value: Language) => changeLanguage(value)}>
+                <SelectTrigger className="w-32 sm:w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      <span className="flex items-center space-x-2">
+                        <span>{lang.flag}</span>
+                        <span className="hidden sm:inline">{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Link to="/application" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.application}</Link>
+            <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.privacy}</Link>
           </div>
         </div>
       </nav>
@@ -22,73 +48,43 @@ const Terms = () => {
       <div className="max-w-4xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader className="bg-green-600 text-white rounded-t-lg">
-            <CardTitle className="text-3xl font-bold">Terms of Service</CardTitle>
-            <p className="text-green-100 text-lg">Ansar Youth Organization</p>
+            <CardTitle className="text-2xl sm:text-3xl font-bold">{t.terms.title}</CardTitle>
+            <p className="text-green-100 text-lg">{t.terms.subtitle}</p>
           </CardHeader>
-          <CardContent className="p-8 space-y-8">
+          <CardContent className="p-4 sm:p-8 space-y-8">
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Volunteer Agreement</h2>
-              <p className="text-gray-700">
-                By applying to join Ansar Youth, you agree to volunteer your time and skills in accordance 
-                with Islamic principles and our organization's mission to spread Islamic knowledge and 
-                support the Muslim community.
-              </p>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.volunteerAgreement}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.volunteerAgreement}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Commitment and Responsibilities</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-1">
-                <li>Commit to the hours and responsibilities you indicate in your application</li>
-                <li>Participate in assigned tasks with dedication and Islamic ethics</li>
-                <li>Maintain respectful communication with team members</li>
-                <li>Follow Islamic guidelines in all organizational activities</li>
-                <li>Represent Ansar Youth positively in all interactions</li>
-              </ul>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.commitmentResponsibilities}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.commitmentResponsibilities}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Code of Conduct</h2>
-              <ul className="list-disc list-inside text-gray-700 space-y-1">
-                <li>All activities must align with Islamic values and teachings</li>
-                <li>Respect for all individuals regardless of background</li>
-                <li>Professional and courteous communication</li>
-                <li>Confidentiality of sensitive organizational information</li>
-                <li>No promotion of content contrary to Islamic principles</li>
-              </ul>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.codeOfConduct}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.codeOfConduct}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Intellectual Property</h2>
-              <p className="text-gray-700">
-                Content created as part of Ansar Youth activities will be used for the organization's 
-                Islamic outreach mission. Contributors will be credited appropriately, and all content 
-                should be permissible according to Islamic guidelines.
-              </p>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.intellectualProperty}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.intellectualProperty}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Termination</h2>
-              <p className="text-gray-700">
-                Either party may terminate the volunteer relationship at any time. We reserve the right 
-                to remove volunteers who do not adhere to Islamic principles or our code of conduct.
-              </p>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.termination}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.termination}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Disclaimer</h2>
-              <p className="text-gray-700">
-                Ansar Youth is a volunteer-based Islamic organization. While we strive for excellence 
-                in our activities, volunteers participate at their own discretion and responsibility.
-              </p>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.disclaimer}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.disclaimer}</p>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">Islamic Principles</h2>
-              <p className="text-gray-700">
-                All activities and communications within Ansar Youth must adhere to Islamic teachings 
-                and values. We seek Allah's guidance in all our endeavors and aim to earn His pleasure 
-                through our service to the Muslim community.
-              </p>
+              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.islamicPrinciples}</h2>
+              <p className="text-gray-700 leading-relaxed">{t.terms.content.islamicPrinciples}</p>
             </div>
 
             <div>
@@ -97,20 +93,20 @@ const Terms = () => {
               </p>
             </div>
 
-            <div className="flex gap-4 pt-6 border-t">
+            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
               <Link to="/application">
-                <Button className="bg-green-600 hover:bg-green-700">
-                  Back to Application
+                <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
+                  {t.navigation.application}
                 </Button>
               </Link>
               <Link to="/">
-                <Button variant="outline">
-                  Home
+                <Button variant="outline" className="w-full sm:w-auto">
+                  {t.navigation.home}
                 </Button>
               </Link>
               <Link to="/privacy">
-                <Button variant="outline">
-                  Privacy Policy
+                <Button variant="outline" className="w-full sm:w-auto">
+                  {t.navigation.privacy}
                 </Button>
               </Link>
             </div>
