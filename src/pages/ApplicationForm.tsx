@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
@@ -11,7 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { languages, type Language } from '@/translations';
 import { Link } from 'react-router-dom';
+import { Globe } from 'lucide-react';
 
 interface ApplicationFormData {
   fullName: string;
@@ -55,6 +57,7 @@ const ApplicationForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentSection, setCurrentSection] = useState(1);
   const { toast } = useToast();
+  const { currentLanguage, changeLanguage, t } = useLanguage();
 
   const onSubmit = async (data: ApplicationFormData) => {
     setIsSubmitting(true);
@@ -117,23 +120,23 @@ const ApplicationForm = () => {
         <Card className="max-w-2xl w-full text-center shadow-2xl">
           <CardContent className="p-12">
             <div className="text-8xl mb-6">✅</div>
-            <h2 className="text-3xl font-bold text-green-800 mb-6">Application Submitted Successfully!</h2>
+            <h2 className="text-3xl font-bold text-green-800 mb-6">{t.applicationForm.success.title}</h2>
             <div className="bg-green-50 p-6 rounded-lg mb-6">
               <p className="text-xl text-gray-800 mb-4 leading-relaxed">
-                <strong>Jazakum Allahu Khayran</strong> for applying to join Ansar Youth!
+                <strong>{t.applicationForm.success.message}</strong>
               </p>
               <p className="text-lg text-gray-700">
-                Our admin team will review your application and contact you shortly. May Allah accept your intention and effort.
+                {t.applicationForm.success.description}
               </p>
             </div>
             <div className="space-y-4">
               <Link to="/">
                 <Button className="bg-green-600 hover:bg-green-700 px-8 py-3 text-lg">
-                  Return to Home
+                  {t.applicationForm.buttons.returnHome}
                 </Button>
               </Link>
               <p className="text-sm text-gray-600">
-                "And whoever volunteers good - then indeed, Allah is appreciative and Knowing." (Quran 2:158)
+                {t.applicationForm.success.quote}
               </p>
             </div>
           </CardContent>
@@ -148,11 +151,30 @@ const ApplicationForm = () => {
       <nav className="container mx-auto px-4 py-4 mb-8">
         <div className="flex justify-between items-center">
           <Link to="/" className="text-2xl font-bold text-green-800 hover:text-green-900 transition-colors">
-            ← Ansar Youth
+            {t.navigation.home}
           </Link>
-          <div className="space-x-4">
-            <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">Privacy</Link>
-            <Link to="/terms" className="text-green-700 hover:text-green-800 transition-colors">Terms</Link>
+          <div className="flex items-center space-x-4">
+            {/* Language Toggle */}
+            <div className="flex items-center space-x-2">
+              <Globe className="h-4 w-4 text-green-700" />
+              <Select value={currentLanguage} onValueChange={(value: Language) => changeLanguage(value)}>
+                <SelectTrigger className="w-40">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages.map((lang) => (
+                    <SelectItem key={lang.code} value={lang.code}>
+                      <span className="flex items-center space-x-2">
+                        <span>{lang.flag}</span>
+                        <span>{lang.name}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.privacy}</Link>
+            <Link to="/terms" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.terms}</Link>
           </div>
         </div>
       </nav>
@@ -161,10 +183,10 @@ const ApplicationForm = () => {
         {/* Header */}
         <Card className="mb-8 shadow-lg">
           <CardHeader className="text-center bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-t-lg">
-            <CardTitle className="text-4xl font-bold">Join Ansar Youth</CardTitle>
-            <p className="text-xl text-green-100">Professional Islamic Organization Application</p>
+            <CardTitle className="text-4xl font-bold">{t.applicationForm.title}</CardTitle>
+            <p className="text-xl text-green-100">{t.applicationForm.subtitle}</p>
             <div className="mt-4 text-lg">
-              Help us build a team of 18-22 dedicated volunteers
+              {t.applicationForm.description}
             </div>
           </CardHeader>
         </Card>
@@ -186,10 +208,10 @@ const ApplicationForm = () => {
             ))}
           </div>
           <div className="flex justify-between mt-2 text-sm text-gray-600">
-            <span>Personal Info</span>
-            <span>Interest & Skills</span>
-            <span>Availability</span>
-            <span>Final Details</span>
+            <span>{t.applicationForm.sections.personalInfo}</span>
+            <span>{t.applicationForm.sections.interest}</span>
+            <span>{t.applicationForm.sections.availability}</span>
+            <span>{t.applicationForm.sections.finalDetails}</span>
           </div>
         </div>
 
@@ -198,40 +220,40 @@ const ApplicationForm = () => {
           {currentSection === 1 && (
             <Card className="shadow-lg">
               <CardHeader className="bg-green-100">
-                <CardTitle className="text-2xl text-green-800">🔹 Section 1: Personal Information</CardTitle>
-                <p className="text-green-700">Tell us about yourself</p>
+                <CardTitle className="text-2xl text-green-800">🔹 {t.applicationForm.sections.personalInfo}</CardTitle>
+                <p className="text-green-700">{t.applicationForm.sections.personalInfoDesc}</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="fullName" className="text-lg font-semibold">Full Name *</Label>
+                    <Label htmlFor="fullName" className="text-lg font-semibold">{t.applicationForm.fields.fullName} *</Label>
                     <Input
                       id="fullName"
-                      {...register('fullName', { required: 'Full name is required' })}
+                      {...register('fullName', { required: t.applicationForm.validation.required })}
                       className="mt-2 text-lg p-3"
-                      placeholder="Enter your full name"
+                      placeholder={t.applicationForm.fields.fullName}
                     />
                     {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>}
                   </div>
 
                   <div>
-                    <Label htmlFor="age" className="text-lg font-semibold">Age *</Label>
+                    <Label htmlFor="age" className="text-lg font-semibold">{t.applicationForm.fields.age} *</Label>
                     <Input
                       id="age"
                       type="number"
-                      {...register('age', { required: 'Age is required', min: 13, max: 99 })}
+                      {...register('age', { required: t.applicationForm.validation.required, min: 13, max: 99 })}
                       className="mt-2 text-lg p-3"
-                      placeholder="Your age"
+                      placeholder={t.applicationForm.fields.age}
                     />
                     {errors.age && <p className="text-red-500 text-sm mt-1">{errors.age.message}</p>}
                   </div>
                 </div>
 
                 <div>
-                  <Label className="text-lg font-semibold">Gender *</Label>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.gender} *</Label>
                   <Select onValueChange={(value) => setValue('gender', value as 'Male' | 'Female')}>
                     <SelectTrigger className="mt-2 text-lg p-3">
-                      <SelectValue placeholder="Select your gender" />
+                      <SelectValue placeholder={t.applicationForm.fields.gender} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Male">Male</SelectItem>
@@ -241,10 +263,10 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="countryCity" className="text-lg font-semibold">Country & City *</Label>
+                  <Label htmlFor="countryCity" className="text-lg font-semibold">{t.applicationForm.fields.countryCity} *</Label>
                   <Input
                     id="countryCity"
-                    {...register('countryCity', { required: 'Country and city are required' })}
+                    {...register('countryCity', { required: t.applicationForm.validation.required })}
                     className="mt-2 text-lg p-3"
                     placeholder="e.g., London, UK or Cairo, Egypt"
                   />
@@ -253,10 +275,10 @@ const ApplicationForm = () => {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <Label htmlFor="phoneNumber" className="text-lg font-semibold">Phone Number (WhatsApp) *</Label>
+                    <Label htmlFor="phoneNumber" className="text-lg font-semibold">{t.applicationForm.fields.phoneNumber} *</Label>
                     <Input
                       id="phoneNumber"
-                      {...register('phoneNumber', { required: 'Phone number is required' })}
+                      {...register('phoneNumber', { required: t.applicationForm.validation.required })}
                       className="mt-2 text-lg p-3"
                       placeholder="+1234567890"
                     />
@@ -264,8 +286,8 @@ const ApplicationForm = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="telegramUsername" className="text-lg font-semibold">Telegram Username</Label>
-                    <p className="text-sm text-gray-600 mb-2">Optional - for team communication</p>
+                    <Label htmlFor="telegramUsername" className="text-lg font-semibold">{t.applicationForm.fields.telegramUsername}</Label>
+                    <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.telegramUsernameDesc}</p>
                     <Input
                       id="telegramUsername"
                       {...register('telegramUsername')}
@@ -276,11 +298,11 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="emailAddress" className="text-lg font-semibold">Email Address *</Label>
+                  <Label htmlFor="emailAddress" className="text-lg font-semibold">{t.applicationForm.fields.emailAddress} *</Label>
                   <Input
                     id="emailAddress"
                     type="email"
-                    {...register('emailAddress', { required: 'Email is required' })}
+                    {...register('emailAddress', { required: t.applicationForm.validation.required })}
                     className="mt-2 text-lg p-3"
                     placeholder="your.email@example.com"
                   />
@@ -289,7 +311,7 @@ const ApplicationForm = () => {
 
                 <div className="flex justify-end">
                   <Button type="button" onClick={nextSection} className="bg-green-600 hover:bg-green-700 px-8 py-3">
-                    Next Section →
+                    {t.applicationForm.buttons.next}
                   </Button>
                 </div>
               </CardContent>
@@ -300,16 +322,16 @@ const ApplicationForm = () => {
           {currentSection === 2 && (
             <Card className="shadow-lg">
               <CardHeader className="bg-blue-100">
-                <CardTitle className="text-2xl text-blue-800">🔹 Section 2: Your Interest in Ansar Youth</CardTitle>
-                <p className="text-blue-700">Help us understand your motivation and skills</p>
+                <CardTitle className="text-2xl text-blue-800">🔹 {t.applicationForm.sections.interest}</CardTitle>
+                <p className="text-blue-700">{t.applicationForm.sections.interestDesc}</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 <div>
-                  <Label htmlFor="whyJoin" className="text-lg font-semibold">Why do you want to join Ansar Youth? *</Label>
-                  <p className="text-sm text-gray-600 mb-2">Share your motivation and what draws you to Islamic work</p>
+                  <Label htmlFor="whyJoin" className="text-lg font-semibold">{t.applicationForm.fields.whyJoin} *</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.whyJoinDesc}</p>
                   <Textarea
                     id="whyJoin"
-                    {...register('whyJoin', { required: 'Please tell us why you want to join' })}
+                    {...register('whyJoin', { required: t.applicationForm.validation.required })}
                     className="mt-2 min-h-[120px] text-lg p-4"
                     placeholder="I want to join Ansar Youth because..."
                   />
@@ -317,8 +339,8 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label className="text-lg font-semibold">Which team(s) do you want to help with? *</Label>
-                  <p className="text-sm text-gray-600 mb-4">Select one or more areas where you'd like to contribute</p>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.interestAreas} *</Label>
+                  <p className="text-sm text-gray-600 mb-4">{t.applicationForm.fields.interestAreasDesc}</p>
                   <div className="grid grid-cols-1 gap-4">
                     {interestOptions.map((option) => (
                       <div key={option.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
@@ -339,12 +361,12 @@ const ApplicationForm = () => {
                       </div>
                     ))}
                   </div>
-                  {selectedInterests.length === 0 && <p className="text-red-500 text-sm mt-2">Please select at least one area</p>}
+                  {selectedInterests.length === 0 && <p className="text-red-500 text-sm mt-2">{t.applicationForm.validation.selectAtLeastOne}</p>}
                 </div>
 
                 <div>
-                  <Label htmlFor="skillsExperience" className="text-lg font-semibold">What skills or experience do you have?</Label>
-                  <p className="text-sm text-gray-600 mb-2">List any relevant skills, tools you know, or past experience</p>
+                  <Label htmlFor="skillsExperience" className="text-lg font-semibold">{t.applicationForm.fields.skillsExperience}</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.skillsExperienceDesc}</p>
                   <Textarea
                     id="skillsExperience"
                     {...register('skillsExperience')}
@@ -355,7 +377,7 @@ const ApplicationForm = () => {
 
                 <div className="flex justify-between">
                   <Button type="button" onClick={prevSection} variant="outline" className="px-8 py-3">
-                    ← Previous
+                    {t.applicationForm.buttons.previous}
                   </Button>
                   <Button 
                     type="button" 
@@ -363,7 +385,7 @@ const ApplicationForm = () => {
                     className="bg-blue-600 hover:bg-blue-700 px-8 py-3"
                     disabled={selectedInterests.length === 0}
                   >
-                    Next Section →
+                    {t.applicationForm.buttons.next}
                   </Button>
                 </div>
               </CardContent>
@@ -374,15 +396,15 @@ const ApplicationForm = () => {
           {currentSection === 3 && (
             <Card className="shadow-lg">
               <CardHeader className="bg-purple-100">
-                <CardTitle className="text-2xl text-purple-800">🔹 Section 3: Your Availability</CardTitle>
-                <p className="text-purple-700">Help us understand your time commitment</p>
+                <CardTitle className="text-2xl text-purple-800">🔹 {t.applicationForm.sections.availability}</CardTitle>
+                <p className="text-purple-700">{t.applicationForm.sections.availabilityDesc}</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 <div>
-                  <Label className="text-lg font-semibold">How many hours can you commit per week? *</Label>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.hoursPerWeek} *</Label>
                   <Select onValueChange={(value) => setValue('hoursPerWeek', value as any)}>
                     <SelectTrigger className="mt-2 text-lg p-3">
-                      <SelectValue placeholder="Select your weekly commitment" />
+                      <SelectValue placeholder={t.applicationForm.fields.hoursPerWeek} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1–2 hours">1–2 hours (Light volunteer)</SelectItem>
@@ -394,10 +416,10 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label className="text-lg font-semibold">Preferred Working Style *</Label>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.workingStyle} *</Label>
                   <Select onValueChange={(value) => setValue('workingStyle', value as any)}>
                     <SelectTrigger className="mt-2 text-lg p-3">
-                      <SelectValue placeholder="How do you prefer to work?" />
+                      <SelectValue placeholder={t.applicationForm.fields.workingStyle} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Online only">Online only (Remote work)</SelectItem>
@@ -408,11 +430,11 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label className="text-lg font-semibold">Are you able to join weekly virtual meetings? *</Label>
-                  <p className="text-sm text-gray-600 mb-2">We have team coordination meetings every week</p>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.weeklyMeetings} *</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.weeklyMeetingsDesc}</p>
                   <Select onValueChange={(value) => setValue('weeklyMeetings', value as any)}>
                     <SelectTrigger className="mt-2 text-lg p-3">
-                      <SelectValue placeholder="Select your availability for meetings" />
+                      <SelectValue placeholder={t.applicationForm.fields.weeklyMeetings} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="Yes">Yes, I can attend regularly</SelectItem>
@@ -424,10 +446,10 @@ const ApplicationForm = () => {
 
                 <div className="flex justify-between">
                   <Button type="button" onClick={prevSection} variant="outline" className="px-8 py-3">
-                    ← Previous
+                    {t.applicationForm.buttons.previous}
                   </Button>
                   <Button type="button" onClick={nextSection} className="bg-purple-600 hover:bg-purple-700 px-8 py-3">
-                    Final Section →
+                    {t.applicationForm.buttons.final}
                   </Button>
                 </div>
               </CardContent>
@@ -438,16 +460,16 @@ const ApplicationForm = () => {
           {currentSection === 4 && (
             <Card className="shadow-lg">
               <CardHeader className="bg-orange-100">
-                <CardTitle className="text-2xl text-orange-800">🔹 Section 4: Final Details</CardTitle>
-                <p className="text-orange-700">Complete your application</p>
+                <CardTitle className="text-2xl text-orange-800">🔹 {t.applicationForm.sections.finalDetails}</CardTitle>
+                <p className="text-orange-700">{t.applicationForm.sections.finalDetailsDesc}</p>
               </CardHeader>
               <CardContent className="space-y-6 p-8">
                 <div>
-                  <Label htmlFor="spiritualMotivation" className="text-lg font-semibold">What inspires you to do Islamic work? *</Label>
-                  <p className="text-sm text-gray-600 mb-2">Share your spiritual motivation and what drives your desire to serve</p>
+                  <Label htmlFor="spiritualMotivation" className="text-lg font-semibold">{t.applicationForm.fields.spiritualMotivation} *</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.spiritualMotivationDesc}</p>
                   <Textarea
                     id="spiritualMotivation"
-                    {...register('spiritualMotivation', { required: 'Please share your spiritual motivation' })}
+                    {...register('spiritualMotivation', { required: t.applicationForm.validation.required })}
                     className="mt-2 min-h-[120px] text-lg p-4"
                     placeholder="My inspiration comes from..."
                   />
@@ -455,8 +477,8 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label className="text-lg font-semibold">Would you like to be added to our team Telegram group?</Label>
-                  <p className="text-sm text-gray-600 mb-2">This is where we coordinate daily activities and stay connected</p>
+                  <Label className="text-lg font-semibold">{t.applicationForm.fields.joinTelegramGroup}</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.joinTelegramGroupDesc}</p>
                   <RadioGroup onValueChange={(value) => setValue('joinTelegramGroup', value === 'Yes')} className="mt-2">
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="Yes" id="telegram-yes" />
@@ -470,8 +492,8 @@ const ApplicationForm = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="questionsNotes" className="text-lg font-semibold">Any questions or additional notes?</Label>
-                  <p className="text-sm text-gray-600 mb-2">Feel free to ask questions or share anything else you'd like us to know</p>
+                  <Label htmlFor="questionsNotes" className="text-lg font-semibold">{t.applicationForm.fields.questionsNotes}</Label>
+                  <p className="text-sm text-gray-600 mb-2">{t.applicationForm.fields.questionsNotesDesc}</p>
                   <Textarea
                     id="questionsNotes"
                     {...register('questionsNotes')}
@@ -496,14 +518,14 @@ const ApplicationForm = () => {
 
                 <div className="flex justify-between">
                   <Button type="button" onClick={prevSection} variant="outline" className="px-8 py-3">
-                    ← Previous
+                    {t.applicationForm.buttons.previous}
                   </Button>
                   <Button
                     type="submit"
                     disabled={isSubmitting || selectedInterests.length === 0}
                     className="bg-green-600 hover:bg-green-700 text-white px-12 py-4 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all"
                   >
-                    {isSubmitting ? 'Submitting...' : 'Submit Application ✨'}
+                    {isSubmitting ? t.applicationForm.buttons.submitting : t.applicationForm.buttons.submit}
                   </Button>
                 </div>
               </CardContent>
