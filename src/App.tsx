@@ -8,7 +8,9 @@ import Index from "./pages/Index";
 import ApplicationForm from "./pages/ApplicationForm";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -17,12 +19,14 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <CookieConsent />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/application" element={<ApplicationForm />} />
           <Route path="/privacy" element={<Privacy />} />
           <Route path="/terms" element={<Terms />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
