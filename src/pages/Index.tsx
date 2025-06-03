@@ -14,6 +14,7 @@ const Index = () => {
           <div className="space-x-4">
             <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">Privacy</Link>
             <Link to="/terms" className="text-green-700 hover:text-green-800 transition-colors">Terms</Link>
+            <Link to="/admin" className="text-gray-500 hover:text-gray-600 transition-colors text-sm">Admin</Link>
             <Link to="/application">
               <Button className="bg-green-600 hover:bg-green-700">Join Us</Button>
             </Link>
