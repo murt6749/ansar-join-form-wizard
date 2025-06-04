@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, Edit, Eye, LogOut, Mail, Phone, MessageCircle, User } from 'lucide-react';
+import { Download, Edit, Eye, LogOut, Mail, Phone, MessageCircle, User, Trash2, Shield, ArrowLeft } from 'lucide-react';
 import { format } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 interface Application {
   id: string;
@@ -87,6 +89,35 @@ const Admin = () => {
     enabled: isAuthenticated
   });
 
+  const deleteApplicationMutation = useMutation({
+    mutationFn: async (applicationId: string) => {
+      const { error } = await supabase
+        .from('ansar_applications')
+        .delete()
+        .eq('id', applicationId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      toast({
+        title: "Application Deleted",
+        description: "The application has been successfully deleted.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete application.",
+        variant: "destructive"
+      });
+    }
+  });
+
+  const handleDeleteApplication = (applicationId: string) => {
+    deleteApplicationMutation.mutate(applicationId);
+  };
+
   const openTelegram = (username: string) => {
     if (username) {
       const telegramUrl = `https://t.me/${username.replace('@', '')}`;
@@ -110,7 +141,7 @@ const Admin = () => {
   const downloadPDF = (application: Application) => {
     const content = `
 ════════════════════════════════════════════════════════════
-                    ANSAR-YOUTH VOLUNTEER APPLICATION
+                    ANSARU-YOUTH VOLUNTEER APPLICATION
 ════════════════════════════════════════════════════════════
 
 📋 PERSONAL INFORMATION
@@ -125,7 +156,7 @@ Telegram: ${application.telegram_username || 'Not provided'}
 
 📝 APPLICATION DETAILS
 ────────────────────────────────────────────────────────────
-Why Join Ansar-Youth:
+Why Join Ansaru-Youth:
 ${application.why_join}
 
 Interest Areas:
@@ -162,7 +193,7 @@ Date: ${format(new Date(application.created_at), 'PPpp')}
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `Ansar_Youth_Application_${application.full_name.replace(/\s+/g, '_')}_${format(new Date(application.created_at), 'yyyy-MM-dd')}.txt`;
+    a.download = `Ansaru_Youth_Application_${application.full_name.replace(/\s+/g, '_')}_${format(new Date(application.created_at), 'yyyy-MM-dd')}.txt`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -175,29 +206,45 @@ Date: ${format(new Date(application.created_at), 'PPpp')}
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50">
-        <Card className="w-full max-w-md shadow-2xl border-0">
-          <CardHeader className="text-center bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
-            <CardTitle className="text-3xl font-bold">🔐 Admin Access</CardTitle>
-            <CardDescription className="text-green-100">Secure Administration Panel</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6 p-8">
-            <div className="text-center">
-              <div className="text-4xl mb-4">🛡️</div>
-              <p className="text-gray-600 mb-6">Enter the administration password to access the volunteer applications dashboard</p>
-            </div>
-            <Input
-              type="password"
-              placeholder="Enter admin password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-              className="text-center text-lg py-6"
-            />
-            <Button onClick={handleLogin} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-6 text-lg font-semibold">
-              🚀 Access Dashboard
-            </Button>
-          </CardContent>
-        </Card>
+        <div className="w-full max-w-md">
+          <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-800 mb-6">
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Home
+          </Link>
+          <Card className="shadow-2xl border-0">
+            <CardHeader className="text-center bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
+              <div className="flex justify-center mb-4">
+                <img 
+                  src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
+                  alt="Ansaru Logo" 
+                  className="h-16 w-16 object-contain"
+                />
+              </div>
+              <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
+                <Shield className="h-8 w-8" />
+                Admin Access
+              </CardTitle>
+              <CardDescription className="text-green-100">Secure Administration Panel</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6 p-8">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🛡️</div>
+                <p className="text-gray-600 mb-6">Enter the administration password to access the volunteer applications dashboard</p>
+              </div>
+              <Input
+                type="password"
+                placeholder="Enter admin password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                className="text-center text-lg py-6"
+              />
+              <Button onClick={handleLogin} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-6 text-lg font-semibold">
+                🚀 Access Dashboard
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -208,11 +255,20 @@ Date: ${format(new Date(application.created_at), 'PPpp')}
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div className="bg-white rounded-lg shadow-lg p-6 flex-1 mr-4">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-              🎯 Admin Dashboard
-            </h1>
-            <p className="text-gray-600 text-lg mt-2">Manage Ansar-Youth Volunteer Applications</p>
-            <div className="mt-4 flex items-center gap-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 mb-4">
+              <img 
+                src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
+                alt="Ansaru Logo" 
+                className="h-12 w-12 object-contain"
+              />
+              <div>
+                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                  🎯 Admin Dashboard
+                </h1>
+                <p className="text-gray-600 text-lg">Manage Ansaru-Youth Volunteer Applications</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1">
                 <User className="h-4 w-4" />
                 Total Applications: {applications?.length || 0}
@@ -221,10 +277,18 @@ Date: ${format(new Date(application.created_at), 'PPpp')}
               <span>Last Updated: {format(new Date(), 'PPp')}</span>
             </div>
           </div>
-          <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2 bg-white shadow-lg hover:shadow-xl transition-all">
-            <LogOut className="h-4 w-4" />
-            Logout
-          </Button>
+          <div className="flex gap-2">
+            <Link to="/">
+              <Button variant="outline" className="flex items-center gap-2 bg-white shadow-lg hover:shadow-xl transition-all">
+                <ArrowLeft className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+            <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2 bg-white shadow-lg hover:shadow-xl transition-all">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </Button>
+          </div>
         </div>
 
         {/* Applications Table */}
@@ -484,6 +548,34 @@ Date: ${format(new Date(application.created_at), 'PPpp')}
                             >
                               <Download className="h-4 w-4" />
                             </Button>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="hover:bg-red-50 hover:border-red-300 text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This will permanently delete {app.full_name}'s application. This action cannot be undone.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => handleDeleteApplication(app.id)}
+                                    className="bg-red-600 hover:bg-red-700"
+                                  >
+                                    Delete
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </div>
                         </TableCell>
                       </TableRow>
