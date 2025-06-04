@@ -9,7 +9,7 @@ interface LayoutProps {
 
 const Layout = ({ children, showSidebar = true }: LayoutProps) => {
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex w-full">
       {showSidebar && <Sidebar />}
       <main className={`flex-1 ${showSidebar ? 'lg:ml-0' : ''}`}>
         {children}

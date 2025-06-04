@@ -154,7 +154,7 @@ const ApplicationForm = () => {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center p-4">
         <Card className="max-w-2xl w-full text-center shadow-2xl">
           <CardContent className="p-8 sm:p-12">
             <div className="text-6xl sm:text-8xl mb-6">✅</div>
@@ -185,7 +185,7 @@ const ApplicationForm = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 mb-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">

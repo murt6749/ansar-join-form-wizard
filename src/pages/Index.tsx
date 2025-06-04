@@ -1,15 +1,17 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 import { Users, Shield, Heart, Globe, Phone, Mail, MapPin } from 'lucide-react';
 import Layout from '@/components/Layout';
+import { useLanguage } from '@/hooks/useLanguage';
 
 const Index = () => {
+  const { t } = useLanguage();
+
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
         {/* Hero Section */}
         <div className="container mx-auto px-4 py-16">
           <div className="text-center mb-16">
