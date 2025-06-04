@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -16,6 +16,7 @@ import { languages, type Language } from '@/translations';
 import { Link } from 'react-router-dom';
 import { Globe, Save } from 'lucide-react';
 import CookieConsent from '@/components/CookieConsent';
+import Layout from '@/components/Layout';
 
 interface ApplicationFormData {
   fullName: string;
@@ -183,8 +184,7 @@ const ApplicationForm = () => {
   }
 
   return (
-    <>
-      <CookieConsent />
+    <Layout>
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
         {/* Navigation */}
         <nav className="container mx-auto px-4 py-4 mb-8">
@@ -222,7 +222,7 @@ const ApplicationForm = () => {
           </div>
         </nav>
 
-        <div className="max-w-4xl mx-auto">
+        <div className="container mx-auto max-w-4xl">
           {/* Header */}
           <Card className="mb-8 shadow-lg">
             <CardHeader className="text-center bg-gradient-to-r from-green-600 to-blue-600 text-white rounded-t-lg">
@@ -600,7 +600,7 @@ const ApplicationForm = () => {
           </form>
         </div>
       </div>
-    </>
+    </Layout>
   );
 };
 

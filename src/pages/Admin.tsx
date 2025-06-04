@@ -1,599 +1,581 @@
-
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Download, Edit, Eye, LogOut, Mail, Phone, MessageCircle, User, Trash2, Shield, ArrowLeft } from 'lucide-react';
-import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
+import { 
+  Eye, 
+  Download, 
+  Search, 
+  Calendar,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  GraduationCap,
+  Clock,
+  Trash2,
+  AlertTriangle
+} from 'lucide-react';
+import Layout from '@/components/Layout';
 
 interface Application {
   id: string;
-  full_name: string;
-  email_address: string;
-  phone_number: string;
-  country_city: string;
-  age: number;
-  gender: string;
-  telegram_username?: string;
-  why_join: string;
-  interest_areas: string[];
-  skills_experience?: string;
-  hours_per_week: string;
-  working_style: string;
-  weekly_meetings: string;
-  spiritual_motivation: string;
-  questions_notes?: string;
-  join_telegram_group: boolean;
   created_at: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  location: string;
+  age: number;
+  occupation: string;
+  education: string;
+  skills: string[];
+  interests: string[];
+  availability: string;
+  experience: string;
+  motivation: string;
+  additional_info: string;
+  status: 'pending' | 'approved' | 'rejected';
 }
 
 const Admin = () => {
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [viewingApplication, setViewingApplication] = useState<Application | null>(null);
-  const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const ADMIN_PASSWORD = "1234Ansar&!";
 
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('admin-authenticated');
-    if (authStatus === 'true') {
-      setIsAuthenticated(true);
-    }
+    checkAuth();
   }, []);
 
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
       setIsAuthenticated(true);
-      sessionStorage.setItem('admin-authenticated', 'true');
+      
+      // Check if user is admin
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('is_admin')
+        .eq('id', session.user.id)
+        .single();
+      
+      if (profile && profile.is_admin) {
+        setIsAdmin(true);
+        fetchApplications();
+      }
+    } else {
+      setLoading(false);
+    }
+  };
+
+  const fetchApplications = async () => {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('applications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) {
       toast({
-        title: "Access Granted",
-        description: "Welcome to the admin panel",
+        title: "Error fetching applications",
+        description: error.message,
+        variant: "destructive"
+      });
+    } else {
+      setApplications(data || []);
+    }
+    setLoading(false);
+  };
+
+  const updateApplicationStatus = async (id: string, status: 'pending' | 'approved' | 'rejected') => {
+    const { error } = await supabase
+      .from('applications')
+      .update({ status })
+      .eq('id', id);
+    
+    if (error) {
+      toast({
+        title: "Error updating status",
+        description: error.message,
+        variant: "destructive"
       });
     } else {
       toast({
-        title: "Access Denied",
-        description: "Incorrect password",
-        variant: "destructive"
+        title: "Status Updated",
+        description: `Application has been ${status}`,
       });
+      
+      // Update local state
+      setApplications(applications.map(app => 
+        app.id === id ? { ...app, status } : app
+      ));
+      
+      if (selectedApplication && selectedApplication.id === id) {
+        setSelectedApplication({ ...selectedApplication, status });
+      }
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    sessionStorage.removeItem('admin-authenticated');
-    navigate('/');
-  };
-
-  const { data: applications, isLoading } = useQuery({
-    queryKey: ['applications'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('ansar_applications')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data as Application[];
-    },
-    enabled: isAuthenticated
-  });
-
-  const deleteApplicationMutation = useMutation({
-    mutationFn: async (applicationId: string) => {
+  const deleteApplication = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this application? This action cannot be undone.")) {
       const { error } = await supabase
-        .from('ansar_applications')
+        .from('applications')
         .delete()
-        .eq('id', applicationId);
+        .eq('id', id);
       
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['applications'] });
-      toast({
-        title: "Application Deleted",
-        description: "The application has been successfully deleted.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete application.",
-        variant: "destructive"
-      });
-    }
-  });
-
-  const handleDeleteApplication = (applicationId: string) => {
-    deleteApplicationMutation.mutate(applicationId);
-  };
-
-  const openTelegram = (username: string) => {
-    if (username) {
-      const telegramUrl = `https://t.me/${username.replace('@', '')}`;
-      window.open(telegramUrl, '_blank');
+      if (error) {
+        toast({
+          title: "Error deleting application",
+          description: error.message,
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Application Deleted",
+          description: "The application has been permanently removed",
+        });
+        
+        // Update local state
+        setApplications(applications.filter(app => app.id !== id));
+        if (selectedApplication && selectedApplication.id === id) {
+          setSelectedApplication(null);
+        }
+      }
     }
   };
 
-  const openEmail = (email: string) => {
-    window.open(`mailto:${email}`, '_blank');
-  };
-
-  const openWhatsApp = (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, '');
-    window.open(`https://wa.me/${cleanPhone}`, '_blank');
-  };
-
-  const openPhone = (phone: string) => {
-    window.open(`tel:${phone}`, '_blank');
-  };
-
-  const downloadPDF = (application: Application) => {
-    const content = `
-════════════════════════════════════════════════════════════
-                    ANSARU-YOUTH VOLUNTEER APPLICATION
-════════════════════════════════════════════════════════════
-
-📋 PERSONAL INFORMATION
-────────────────────────────────────────────────────────────
-Full Name: ${application.full_name}
-Email: ${application.email_address}
-Phone: ${application.phone_number}
-Location: ${application.country_city}
-Age: ${application.age}
-Gender: ${application.gender}
-Telegram: ${application.telegram_username || 'Not provided'}
-
-📝 APPLICATION DETAILS
-────────────────────────────────────────────────────────────
-Why Join Ansaru-Youth:
-${application.why_join}
-
-Interest Areas:
-${application.interest_areas.map(area => `• ${area}`).join('\n')}
-
-Skills & Experience:
-${application.skills_experience || 'Not provided'}
-
-🕐 AVAILABILITY & COMMITMENT
-────────────────────────────────────────────────────────────
-Hours per Week: ${application.hours_per_week}
-Working Style: ${application.working_style}
-Weekly Meetings: ${application.weekly_meetings}
-
-🤲 SPIRITUAL MOTIVATION
-────────────────────────────────────────────────────────────
-${application.spiritual_motivation}
-
-📞 ADDITIONAL INFORMATION
-────────────────────────────────────────────────────────────
-Questions/Notes: ${application.questions_notes || 'None'}
-Join Telegram Group: ${application.join_telegram_group ? 'Yes' : 'No'}
-
-📅 APPLICATION SUBMITTED
-────────────────────────────────────────────────────────────
-Date: ${format(new Date(application.created_at), 'PPpp')}
-
-════════════════════════════════════════════════════════════
-                    End of Application
-════════════════════════════════════════════════════════════
-    `;
-
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const exportToCsv = () => {
+    // Create CSV content
+    const headers = [
+      "Full Name", "Email", "Phone", "Location", "Age", "Occupation", 
+      "Education", "Skills", "Interests", "Availability", "Experience", 
+      "Motivation", "Additional Info", "Status", "Created At"
+    ];
+    
+    const csvRows = [
+      headers.join(','),
+      ...applications.map(app => [
+        `"${app.full_name}"`,
+        `"${app.email}"`,
+        `"${app.phone}"`,
+        `"${app.location}"`,
+        app.age,
+        `"${app.occupation}"`,
+        `"${app.education}"`,
+        `"${app.skills.join('; ')}"`,
+        `"${app.interests.join('; ')}"`,
+        `"${app.availability}"`,
+        `"${app.experience}"`,
+        `"${app.motivation}"`,
+        `"${app.additional_info}"`,
+        app.status,
+        new Date(app.created_at).toLocaleString()
+      ].join(','))
+    ];
+    
+    const csvContent = csvRows.join('\n');
+    
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `Ansaru_Youth_Application_${application.full_name.replace(/\s+/g, '_')}_${format(new Date(application.created_at), 'yyyy-MM-dd')}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-
-    toast({
-      title: "Download Complete",
-      description: `${application.full_name}'s application has been downloaded`,
-    });
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `ansaru-applications-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
+
+  const filteredApplications = applications.filter(app => 
+    app.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    app.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case 'approved':
+        return <Badge className="bg-green-500">Approved</Badge>;
+      case 'rejected':
+        return <Badge className="bg-red-500">Rejected</Badge>;
+      default:
+        return <Badge className="bg-yellow-500">Pending</Badge>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+          <div className="container mx-auto max-w-6xl">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+                <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
+                <CardDescription className="text-green-100">Loading...</CardDescription>
+              </CardHeader>
+              <CardContent className="p-8">
+                <div className="flex items-center justify-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-600"></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-blue-50">
-        <div className="w-full max-w-md">
-          <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-800 mb-6">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Home
-          </Link>
-          <Card className="shadow-2xl border-0">
-            <CardHeader className="text-center bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-t-lg">
-              <div className="flex justify-center mb-4">
-                <img 
-                  src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
-                  alt="Ansaru Logo" 
-                  className="h-16 w-16 object-contain"
-                />
-              </div>
-              <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-                <Shield className="h-8 w-8" />
-                Admin Access
-              </CardTitle>
-              <CardDescription className="text-green-100">Secure Administration Panel</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 p-8">
-              <div className="text-center">
-                <div className="text-4xl mb-4">🛡️</div>
-                <p className="text-gray-600 mb-6">Enter the administration password to access the volunteer applications dashboard</p>
-              </div>
-              <Input
-                type="password"
-                placeholder="Enter admin password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                className="text-center text-lg py-6"
-              />
-              <Button onClick={handleLogin} className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 py-6 text-lg font-semibold">
-                🚀 Access Dashboard
-              </Button>
-            </CardContent>
-          </Card>
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+          <div className="container mx-auto max-w-md">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+                <CardTitle className="text-2xl">Admin Access Required</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 text-center">
+                <AlertTriangle className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-4">Authentication Required</h2>
+                <p className="text-gray-600 mb-6">
+                  You need to be logged in to access the admin dashboard.
+                </p>
+                <Button 
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => window.location.href = '/auth'}
+                >
+                  Go to Login
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-      </div>
+      </Layout>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <Layout>
+        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+          <div className="container mx-auto max-w-md">
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-red-600 to-orange-600 text-white">
+                <CardTitle className="text-2xl">Access Denied</CardTitle>
+              </CardHeader>
+              <CardContent className="p-8 text-center">
+                <AlertTriangle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+                <h2 className="text-xl font-semibold mb-4">Admin Access Required</h2>
+                <p className="text-gray-600 mb-6">
+                  You don't have permission to access the admin dashboard. Please contact the administrator if you believe this is an error.
+                </p>
+                <Button 
+                  className="bg-green-600 hover:bg-green-700"
+                  onClick={() => window.location.href = '/'}
+                >
+                  Return to Home
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-green-50 to-emerald-50">
-      <div className="max-w-7xl mx-auto p-6">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-8">
-          <div className="bg-white rounded-lg shadow-lg p-6 flex-1 mr-4">
-            <div className="flex items-center gap-4 mb-4">
-              <img 
-                src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
-                alt="Ansaru Logo" 
-                className="h-12 w-12 object-contain"
-              />
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  🎯 Admin Dashboard
-                </h1>
-                <p className="text-gray-600 text-lg">Manage Ansaru-Youth Volunteer Applications</p>
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+        <div className="container mx-auto">
+          <Card className="shadow-lg mb-6">
+            <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+              <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
+              <CardDescription className="text-green-100">
+                Manage volunteer applications
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <div className="relative w-full md:w-auto">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search applications..."
+                    className="pl-10 w-full md:w-80"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Button 
+                    onClick={exportToCsv}
+                    className="bg-blue-600 hover:bg-blue-700 w-full md:w-auto"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Export to CSV
+                  </Button>
+                  <Button 
+                    onClick={fetchApplications}
+                    variant="outline"
+                    className="border-green-600 text-green-600 hover:bg-green-600 hover:text-white w-full md:w-auto"
+                  >
+                    Refresh
+                  </Button>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 text-sm text-gray-500">
-              <span className="flex items-center gap-1">
-                <User className="h-4 w-4" />
-                Total Applications: {applications?.length || 0}
-              </span>
-              <span>•</span>
-              <span>Last Updated: {format(new Date(), 'PPp')}</span>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Link to="/">
-              <Button variant="outline" className="flex items-center gap-2 bg-white shadow-lg hover:shadow-xl transition-all">
-                <ArrowLeft className="h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-            <Button onClick={handleLogout} variant="outline" className="flex items-center gap-2 bg-white shadow-lg hover:shadow-xl transition-all">
-              <LogOut className="h-4 w-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
 
-        {/* Applications Table */}
-        <Card className="shadow-2xl border-0 overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
-            <CardTitle className="text-2xl flex items-center gap-2">
-              📊 Applications Dashboard
-            </CardTitle>
-            <CardDescription className="text-green-100">
-              View, manage and download volunteer applications
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin h-8 w-8 border-4 border-green-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-                <p className="text-gray-600">Loading applications...</p>
-              </div>
-            ) : applications && applications.length > 0 ? (
               <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="bg-gray-50">
-                      <TableHead className="font-semibold">👤 Applicant</TableHead>
-                      <TableHead className="font-semibold">📧 Contact</TableHead>
-                      <TableHead className="font-semibold">📍 Location</TableHead>
-                      <TableHead className="font-semibold">📅 Applied</TableHead>
-                      <TableHead className="font-semibold text-center">⚡ Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {applications.map((app, index) => (
-                      <TableRow key={app.id} className={`hover:bg-green-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}>
-                        <TableCell>
-                          <div className="font-semibold text-green-800">{app.full_name}</div>
-                          <div className="text-sm text-gray-600">{app.age} years • {app.gender}</div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
-                            <button
-                              onClick={() => openEmail(app.email_address)}
-                              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 transition-colors"
-                            >
-                              <Mail className="h-3 w-3" />
-                              <span className="text-xs">{app.email_address}</span>
-                            </button>
-                            <div className="flex gap-2">
-                              <button
-                                onClick={() => openWhatsApp(app.phone_number)}
-                                className="text-green-600 hover:text-green-800 transition-colors"
-                                title="WhatsApp"
-                              >
-                                <MessageCircle className="h-3 w-3" />
-                              </button>
-                              <button
-                                onClick={() => openPhone(app.phone_number)}
-                                className="text-blue-600 hover:text-blue-800 transition-colors"
-                                title="Call"
-                              >
-                                <Phone className="h-3 w-3" />
-                              </button>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-sm">{app.country_city}</TableCell>
-                        <TableCell className="text-sm">{format(new Date(app.created_at), 'MMM dd, yyyy')}</TableCell>
-                        <TableCell>
-                          <div className="flex justify-center gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  onClick={() => setViewingApplication(app)}
-                                  className="hover:bg-green-50 hover:border-green-300"
-                                >
-                                  <Eye className="h-4 w-4" />
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle className="text-2xl text-green-800 flex items-center gap-2">
-                                    👤 {app.full_name}'s Application
-                                  </DialogTitle>
-                                </DialogHeader>
-                                {viewingApplication && (
-                                  <div className="space-y-6">
-                                    {/* Personal Info Card */}
-                                    <Card className="border-green-200">
-                                      <CardHeader className="bg-green-50">
-                                        <CardTitle className="text-lg text-green-800">📋 Personal Information</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4 space-y-3">
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                          <div>
-                                            <strong className="text-green-700">Full Name:</strong>
-                                            <p className="text-gray-800">{viewingApplication.full_name}</p>
-                                          </div>
-                                          <div>
-                                            <strong className="text-green-700">Age & Gender:</strong>
-                                            <p className="text-gray-800">{viewingApplication.age} years • {viewingApplication.gender}</p>
-                                          </div>
-                                          <div>
-                                            <strong className="text-green-700">Location:</strong>
-                                            <p className="text-gray-800">{viewingApplication.country_city}</p>
-                                          </div>
-                                          <div>
-                                            <strong className="text-green-700">Applied:</strong>
-                                            <p className="text-gray-800">{format(new Date(viewingApplication.created_at), 'PPpp')}</p>
-                                          </div>
-                                        </div>
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Contact Info Card */}
-                                    <Card className="border-blue-200">
-                                      <CardHeader className="bg-blue-50">
-                                        <CardTitle className="text-lg text-blue-800">📞 Contact Information</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4 space-y-3">
-                                        <div className="space-y-2">
-                                          <div className="flex items-center gap-2">
-                                            <strong className="text-blue-700">Email:</strong>
-                                            <button
-                                              onClick={() => openEmail(viewingApplication.email_address)}
-                                              className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
-                                            >
-                                              <Mail className="h-4 w-4" />
-                                              {viewingApplication.email_address}
-                                            </button>
-                                          </div>
-                                          <div className="flex items-center gap-2">
-                                            <strong className="text-blue-700">Phone:</strong>
-                                            <div className="flex gap-2">
-                                              <button
-                                                onClick={() => openWhatsApp(viewingApplication.phone_number)}
-                                                className="flex items-center gap-1 text-green-600 hover:text-green-800 underline"
-                                              >
-                                                <MessageCircle className="h-4 w-4" />
-                                                WhatsApp
-                                              </button>
-                                              <span>•</span>
-                                              <button
-                                                onClick={() => openPhone(viewingApplication.phone_number)}
-                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
-                                              >
-                                                <Phone className="h-4 w-4" />
-                                                Call {viewingApplication.phone_number}
-                                              </button>
-                                            </div>
-                                          </div>
-                                          {viewingApplication.telegram_username && (
-                                            <div className="flex items-center gap-2">
-                                              <strong className="text-blue-700">Telegram:</strong>
-                                              <button
-                                                onClick={() => openTelegram(viewingApplication.telegram_username!)}
-                                                className="flex items-center gap-1 text-blue-600 hover:text-blue-800 underline"
-                                              >
-                                                <MessageCircle className="h-4 w-4" />
-                                                @{viewingApplication.telegram_username}
-                                              </button>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Application Details */}
-                                    <Card className="border-purple-200">
-                                      <CardHeader className="bg-purple-50">
-                                        <CardTitle className="text-lg text-purple-800">📝 Application Details</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4 space-y-4">
-                                        <div>
-                                          <strong className="text-purple-700">Why Join Ansar-Youth:</strong>
-                                          <p className="mt-1 p-3 bg-gray-50 rounded text-gray-800">{viewingApplication.why_join}</p>
-                                        </div>
-                                        <div>
-                                          <strong className="text-purple-700">Interest Areas:</strong>
-                                          <div className="mt-1 flex flex-wrap gap-2">
-                                            {viewingApplication.interest_areas.map((area, index) => (
-                                              <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                                                {area}
-                                              </span>
-                                            ))}
-                                          </div>
-                                        </div>
-                                        {viewingApplication.skills_experience && (
-                                          <div>
-                                            <strong className="text-purple-700">Skills & Experience:</strong>
-                                            <p className="mt-1 p-3 bg-gray-50 rounded text-gray-800">{viewingApplication.skills_experience}</p>
-                                          </div>
-                                        )}
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Availability */}
-                                    <Card className="border-orange-200">
-                                      <CardHeader className="bg-orange-50">
-                                        <CardTitle className="text-lg text-orange-800">🕐 Availability & Commitment</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4 space-y-3">
-                                        <div className="grid md:grid-cols-3 gap-4">
-                                          <div>
-                                            <strong className="text-orange-700">Hours/Week:</strong>
-                                            <p className="text-gray-800">{viewingApplication.hours_per_week}</p>
-                                          </div>
-                                          <div>
-                                            <strong className="text-orange-700">Working Style:</strong>
-                                            <p className="text-gray-800">{viewingApplication.working_style}</p>
-                                          </div>
-                                          <div>
-                                            <strong className="text-orange-700">Weekly Meetings:</strong>
-                                            <p className="text-gray-800">{viewingApplication.weekly_meetings}</p>
-                                          </div>
-                                        </div>
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Spiritual Motivation */}
-                                    <Card className="border-emerald-200">
-                                      <CardHeader className="bg-emerald-50">
-                                        <CardTitle className="text-lg text-emerald-800">🤲 Spiritual Motivation</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4">
-                                        <p className="p-3 bg-gray-50 rounded text-gray-800">{viewingApplication.spiritual_motivation}</p>
-                                      </CardContent>
-                                    </Card>
-
-                                    {/* Additional Information */}
-                                    <Card className="border-gray-200">
-                                      <CardHeader className="bg-gray-50">
-                                        <CardTitle className="text-lg text-gray-800">📋 Additional Information</CardTitle>
-                                      </CardHeader>
-                                      <CardContent className="p-4 space-y-3">
-                                        <div>
-                                          <strong className="text-gray-700">Questions/Notes:</strong>
-                                          <p className="mt-1 p-3 bg-gray-50 rounded text-gray-800">{viewingApplication.questions_notes || 'None provided'}</p>
-                                        </div>
-                                        <div>
-                                          <strong className="text-gray-700">Join Telegram Group:</strong>
-                                          <span className={`ml-2 px-3 py-1 rounded-full text-sm ${viewingApplication.join_telegram_group ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                            {viewingApplication.join_telegram_group ? '✅ Yes' : '❌ No'}
-                                          </span>
-                                        </div>
-                                      </CardContent>
-                                    </Card>
-                                  </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className="bg-gray-100">
+                      <th className="p-3 text-left text-gray-600 font-semibold">Name</th>
+                      <th className="p-3 text-left text-gray-600 font-semibold">Email</th>
+                      <th className="p-3 text-left text-gray-600 font-semibold">Location</th>
+                      <th className="p-3 text-left text-gray-600 font-semibold">Date</th>
+                      <th className="p-3 text-left text-gray-600 font-semibold">Status</th>
+                      <th className="p-3 text-left text-gray-600 font-semibold">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredApplications.length === 0 ? (
+                      <tr>
+                        <td colSpan={6} className="p-4 text-center text-gray-500">
+                          {searchTerm ? "No applications match your search" : "No applications found"}
+                        </td>
+                      </tr>
+                    ) : (
+                      filteredApplications.map((app) => (
+                        <tr 
+                          key={app.id} 
+                          className="border-t border-gray-200 hover:bg-gray-50 cursor-pointer"
+                          onClick={() => setSelectedApplication(app)}
+                        >
+                          <td className="p-3">{app.full_name}</td>
+                          <td className="p-3">{app.email}</td>
+                          <td className="p-3">{app.location}</td>
+                          <td className="p-3">{formatDate(app.created_at)}</td>
+                          <td className="p-3">{getStatusBadge(app.status)}</td>
+                          <td className="p-3">
                             <Button 
                               size="sm" 
-                              variant="outline" 
-                              onClick={() => downloadPDF(app)}
-                              className="hover:bg-blue-50 hover:border-blue-300"
+                              variant="ghost"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedApplication(app);
+                              }}
                             >
-                              <Download className="h-4 w-4" />
+                              <Eye className="h-4 w-4" />
                             </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                <Button 
-                                  size="sm" 
-                                  variant="outline" 
-                                  className="hover:bg-red-50 hover:border-red-300 text-red-600"
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This will permanently delete {app.full_name}'s application. This action cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                  <AlertDialogAction 
-                                    onClick={() => handleDeleteApplication(app.id)}
-                                    className="bg-red-600 hover:bg-red-700"
-                                  >
-                                    Delete
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {selectedApplication && (
+            <Card className="shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <CardTitle className="text-xl">Application Details</CardTitle>
+                    <CardDescription className="text-blue-100">
+                      Submitted on {formatDate(selectedApplication.created_at)}
+                    </CardDescription>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm" 
+                      className="bg-green-500 hover:bg-green-600"
+                      onClick={() => updateApplicationStatus(selectedApplication.id, 'approved')}
+                      disabled={selectedApplication.status === 'approved'}
+                    >
+                      Approve
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="bg-red-500 hover:bg-red-600"
+                      onClick={() => updateApplicationStatus(selectedApplication.id, 'rejected')}
+                      disabled={selectedApplication.status === 'rejected'}
+                    >
+                      Reject
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="bg-white text-gray-700 hover:bg-gray-100"
+                      onClick={() => setSelectedApplication(null)}
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Personal Information</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <User className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Full Name</div>
+                            <div className="font-medium">{selectedApplication.full_name}</div>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">📝</div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">No Applications Yet</h3>
-                <p className="text-gray-500">Applications will appear here once volunteers start submitting them.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                        </div>
+                        <div className="flex items-start">
+                          <Mail className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Email</div>
+                            <div className="font-medium">{selectedApplication.email}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start">
+                          <Phone className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Phone</div>
+                            <div className="font-medium">{selectedApplication.phone}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start">
+                          <MapPin className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Location</div>
+                            <div className="font-medium">{selectedApplication.location}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start">
+                          <Calendar className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Age</div>
+                            <div className="font-medium">{selectedApplication.age} years</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Professional Background</h3>
+                      <div className="space-y-3">
+                        <div className="flex items-start">
+                          <Briefcase className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Occupation</div>
+                            <div className="font-medium">{selectedApplication.occupation}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start">
+                          <GraduationCap className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Education</div>
+                            <div className="font-medium">{selectedApplication.education}</div>
+                          </div>
+                        </div>
+                        <div className="flex items-start">
+                          <Clock className="h-5 w-5 text-gray-500 mr-3 mt-0.5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Availability</div>
+                            <div className="font-medium">{selectedApplication.availability}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Skills & Interests</h3>
+                      <div className="mb-4">
+                        <div className="text-sm text-gray-500 mb-2">Skills</div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedApplication.skills.map((skill, index) => (
+                            <Badge key={index} className="bg-blue-100 text-blue-800 hover:bg-blue-200">
+                              {skill}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <div className="text-sm text-gray-500 mb-2">Interests</div>
+                        <div className="flex flex-wrap gap-2">
+                          {selectedApplication.interests.map((interest, index) => (
+                            <Badge key={index} className="bg-green-100 text-green-800 hover:bg-green-200">
+                              {interest}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4">Experience & Motivation</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="text-sm text-gray-500 mb-1">Experience</div>
+                          <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                            {selectedApplication.experience}
+                          </p>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-500 mb-1">Motivation</div>
+                          <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                            {selectedApplication.motivation}
+                          </p>
+                        </div>
+                        {selectedApplication.additional_info && (
+                          <div>
+                            <div className="text-sm text-gray-500 mb-1">Additional Information</div>
+                            <p className="text-gray-700 bg-gray-50 p-3 rounded-md">
+                              {selectedApplication.additional_info}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <span className="text-sm text-gray-500 mr-2">Current Status:</span>
+                      {getStatusBadge(selectedApplication.status)}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => deleteApplication(selectedApplication.id)}
+                        className="flex items-center"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Application
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 };
 

@@ -1,119 +1,61 @@
-
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/hooks/useLanguage';
-import { languages, type Language } from '@/translations';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Globe } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import Layout from '@/components/Layout';
 
 const Terms = () => {
-  const { currentLanguage, changeLanguage, t } = useLanguage();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
-      {/* Navigation */}
-      <nav className="container mx-auto px-4 py-4 mb-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <Link to="/" className="text-2xl font-bold text-green-800 hover:text-green-900 transition-colors">
-            {t.navigation.home}
-          </Link>
-          <div className="flex items-center space-x-4">
-            {/* Language Toggle */}
-            <div className="flex items-center space-x-2">
-              <Globe className="h-4 w-4 text-green-700" />
-              <Select value={currentLanguage} onValueChange={(value: Language) => changeLanguage(value)}>
-                <SelectTrigger className="w-32 sm:w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {languages.map((lang) => (
-                    <SelectItem key={lang.code} value={lang.code}>
-                      <span className="flex items-center space-x-2">
-                        <span>{lang.flag}</span>
-                        <span className="hidden sm:inline">{lang.name}</span>
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Link to="/application" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.application}</Link>
-            <Link to="/privacy" className="text-green-700 hover:text-green-800 transition-colors">{t.navigation.privacy}</Link>
+    <Layout>
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="mb-8">
+            <Link to="/" className="inline-flex items-center text-green-600 hover:text-green-800 mb-6">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Home
+            </Link>
           </div>
+
+          <Card className="shadow-lg">
+            <CardHeader className="bg-gradient-to-r from-green-600 to-emerald-600 text-white">
+              <CardTitle className="text-3xl">Terms of Service</CardTitle>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6">
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-green-800">Acceptance of Terms</h2>
+                <p className="text-gray-700 leading-relaxed">
+                  By accessing and using this website, you accept and agree to be bound by the terms 
+                  and provision of this agreement.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-green-800">Use License</h2>
+                <p className="text-gray-700 leading-relaxed">
+                  Permission is granted to temporarily download one copy of the materials on Ansaru Youth's 
+                  website for personal, non-commercial transitory viewing only.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-green-800">Disclaimer</h2>
+                <p className="text-gray-700 leading-relaxed">
+                  The materials on Ansaru Youth's website are provided on an 'as is' basis. Ansaru Youth 
+                  makes no warranties, expressed or implied.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <h2 className="text-2xl font-semibold text-green-800">Contact Information</h2>
+                <p className="text-gray-700 leading-relaxed">
+                  If you have any questions about these Terms of Service, please contact us at info@ansaruyouth.org
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </nav>
-
-      <div className="max-w-4xl mx-auto">
-        <Card className="shadow-xl">
-          <CardHeader className="bg-green-600 text-white rounded-t-lg">
-            <CardTitle className="text-2xl sm:text-3xl font-bold">{t.terms.title}</CardTitle>
-            <p className="text-green-100 text-lg">{t.terms.subtitle}</p>
-          </CardHeader>
-          <CardContent className="p-4 sm:p-8 space-y-8">
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.volunteerAgreement}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.volunteerAgreement}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.commitmentResponsibilities}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.commitmentResponsibilities}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.codeOfConduct}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.codeOfConduct}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.intellectualProperty}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.intellectualProperty}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.termination}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.termination}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.disclaimer}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.disclaimer}</p>
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-green-800 mb-3">{t.terms.sections.islamicPrinciples}</h2>
-              <p className="text-gray-700 leading-relaxed">{t.terms.content.islamicPrinciples}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-600">
-                Last updated: {new Date().toLocaleDateString()}
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4 pt-6 border-t">
-              <Link to="/application">
-                <Button className="bg-green-600 hover:bg-green-700 w-full sm:w-auto">
-                  {t.navigation.application}
-                </Button>
-              </Link>
-              <Link to="/">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  {t.navigation.home}
-                </Button>
-              </Link>
-              <Link to="/privacy">
-                <Button variant="outline" className="w-full sm:w-auto">
-                  {t.navigation.privacy}
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
       </div>
-    </div>
+    </Layout>
   );
 };
 
