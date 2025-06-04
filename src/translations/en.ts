@@ -216,5 +216,16 @@ export const en = {
     tryAgain: 'Try again',
     goHome: 'Go to homepage',
     contactSupport: 'Contact support'
+  },
+  cookies: {
+    title: 'Cookie Consent',
+    message: 'We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.',
+    accept: 'Accept',
+    decline: 'Decline'
+  },
+  draft: {
+    saved: 'Draft saved automatically',
+    restored: 'Draft restored',
+    clear: 'Clear draft'
   }
 };
