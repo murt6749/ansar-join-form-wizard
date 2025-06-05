@@ -2,257 +2,280 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Link } from 'react-router-dom';
-import { Users, Shield, Heart, Globe, Phone, Mail, MapPin } from 'lucide-react';
-import Layout from '@/components/Layout';
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '@/hooks/useLanguage';
+import { 
+  ArrowRight, 
+  Heart, 
+  Users, 
+  BookOpen, 
+  Globe, 
+  Star,
+  MessageCircle,
+  Shield,
+  Target,
+  Zap,
+  Award,
+  TrendingUp
+} from 'lucide-react';
+import Layout from '@/components/Layout';
 
 const Index = () => {
   const { t } = useLanguage();
 
+  const features = [
+    {
+      icon: Heart,
+      title: 'Faith-Driven Mission',
+      description: 'Building a better future through Islamic values and community service',
+      color: 'text-red-600 bg-red-50'
+    },
+    {
+      icon: Users,
+      title: 'Youth Empowerment',
+      description: 'Engaging young minds in meaningful projects and leadership development',
+      color: 'text-blue-600 bg-blue-50'
+    },
+    {
+      icon: BookOpen,
+      title: 'Educational Impact',
+      description: 'Providing learning opportunities and skill development programs',
+      color: 'text-green-600 bg-green-50'
+    },
+    {
+      icon: Globe,
+      title: 'Global Reach',
+      description: 'Connecting communities worldwide for positive change',
+      color: 'text-purple-600 bg-purple-50'
+    },
+    {
+      icon: Target,
+      title: 'Focused Goals',
+      description: 'Strategic initiatives that create lasting impact in communities',
+      color: 'text-orange-600 bg-orange-50'
+    },
+    {
+      icon: Shield,
+      title: 'Trust & Integrity',
+      description: 'Transparent operations built on Islamic principles of honesty',
+      color: 'text-teal-600 bg-teal-50'
+    }
+  ];
+
+  const stats = [
+    { number: '500+', label: 'Active Volunteers', icon: Users },
+    { number: '50+', label: 'Projects Completed', icon: Award },
+    { number: '25+', label: 'Countries Reached', icon: Globe },
+    { number: '98%', label: 'Satisfaction Rate', icon: TrendingUp }
+  ];
+
+  const impactAreas = [
+    'Community Outreach',
+    'Youth Education',
+    'Social Media Dawah',
+    'Emergency Relief',
+    'Skill Development',
+    'Mentorship Programs'
+  ];
+
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
-        {/* Mobile-optimized Hero Section */}
-        <div className="container mx-auto px-4 py-8 lg:py-16">
-          <div className="text-center mb-12 lg:mb-16">
-            <div className="flex justify-center mb-6">
-              <div className="w-24 h-24 lg:w-32 lg:h-32 rounded-full overflow-hidden bg-white shadow-xl p-3 lg:p-4">
-                <img 
-                  src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
-                  alt="Ansaru Logo" 
-                  className="w-full h-full object-contain"
-                />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-orange-50 to-amber-50">
+        {/* Hero Section */}
+        <section className="relative pt-20 pb-16 px-4 overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-20 left-10 w-32 h-32 rounded-full bg-teal-400"></div>
+            <div className="absolute top-40 right-20 w-24 h-24 rounded-full bg-orange-400"></div>
+            <div className="absolute bottom-20 left-1/4 w-16 h-16 rounded-full bg-amber-400"></div>
+          </div>
+
+          <div className="container mx-auto max-w-6xl relative z-10">
+            <div className="text-center mb-12">
+              {/* Logo */}
+              <div className="flex justify-center mb-6">
+                <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-orange-500 p-4 shadow-2xl">
+                  <img 
+                    src="/lovable-uploads/9ffdc7fa-be78-4a04-8b3e-673407016278.png" 
+                    alt="Fadis Youth Logo" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
               </div>
-            </div>
-            <h1 className="text-3xl lg:text-6xl font-bold text-green-800 mb-4 lg:mb-6">
-              Ansaru Youth for Deen
-            </h1>
-            <p className="text-base lg:text-2xl text-gray-700 mb-6 lg:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
-              Join us in spreading Islamic knowledge and making a positive impact in the Muslim community through organized da'wah, content creation, and community support
-            </p>
-            <div className="text-lg lg:text-2xl text-green-700 mb-8 lg:mb-12 font-arabic">
-              بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم
-            </div>
-            <div className="flex flex-col sm:flex-row justify-center gap-3 lg:gap-4 px-4">
-              <Link to="/application" className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                  Apply to Join Our Mission
-                </Button>
-              </Link>
-              <a href="https://ansaar.netlify.app" target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
-                <Button size="lg" variant="outline" className="w-full sm:w-auto border-green-600 text-green-600 hover:bg-green-600 hover:text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                  Explore Team Structure
-                </Button>
-              </a>
-            </div>
-          </div>
 
-          {/* Mobile-optimized Mission Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 mb-12 lg:mb-16">
-            <Card className="text-center hover:shadow-xl transition-shadow duration-300 border-green-200">
-              <CardHeader className="pb-3">
-                <div className="mx-auto w-12 h-12 lg:w-16 lg:h-16 bg-green-100 rounded-full flex items-center justify-center mb-3 lg:mb-4">
-                  <Heart className="h-6 w-6 lg:h-8 lg:w-8 text-green-600" />
-                </div>
-                <CardTitle className="text-green-800 text-lg lg:text-xl">📚 Islamic Education</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
-                  Creating and sharing authentic Islamic content to educate and inspire the Muslim community through various digital platforms
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-xl transition-shadow duration-300 border-green-200">
-              <CardHeader className="pb-3">
-                <div className="mx-auto w-12 h-12 lg:w-16 lg:h-16 bg-blue-100 rounded-full flex items-center justify-center mb-3 lg:mb-4">
-                  <Users className="h-6 w-6 lg:h-8 lg:w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-green-800 text-lg lg:text-xl">🤝 Community Support</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
-                  Supporting fellow Muslims through organized outreach programs, charitable activities, and rural da'wah initiatives
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="text-center hover:shadow-xl transition-shadow duration-300 border-green-200">
-              <CardHeader className="pb-3">
-                <div className="mx-auto w-12 h-12 lg:w-16 lg:h-16 bg-purple-100 rounded-full flex items-center justify-center mb-3 lg:mb-4">
-                  <Globe className="h-6 w-6 lg:h-8 lg:w-8 text-purple-600" />
-                </div>
-                <CardTitle className="text-green-800 text-lg lg:text-xl">🌍 Global Impact</CardTitle>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-sm lg:text-base text-gray-700 leading-relaxed">
-                  Working together as a professional organization to create positive change in Muslim communities worldwide
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Mobile-optimized Teams Section */}
-          <div className="mb-12 lg:mb-16">
-            <h2 className="text-2xl lg:text-4xl font-bold text-center text-green-800 mb-8 lg:mb-12">Our Professional Teams</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              <Card className="hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="text-center bg-green-600 text-white rounded-t-lg p-4">
-                  <CardTitle className="text-base lg:text-lg">👑 Leadership</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 lg:p-4">
-                  <ul className="text-xs lg:text-sm space-y-1 lg:space-y-2 text-gray-700">
-                    <li>• General Manager</li>
-                    <li>• Spiritual Advisor</li>
-                    <li>• Team Relations</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="text-center bg-blue-600 text-white rounded-t-lg p-4">
-                  <CardTitle className="text-base lg:text-lg">📝 Content & Media</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 lg:p-4">
-                  <ul className="text-xs lg:text-sm space-y-1 lg:space-y-2 text-gray-700">
-                    <li>• Islamic Writers</li>
-                    <li>• Graphic Designers</li>
-                    <li>• Video Editors</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="text-center bg-purple-600 text-white rounded-t-lg p-4">
-                  <CardTitle className="text-base lg:text-lg">🌍 Outreach</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 lg:p-4">
-                  <ul className="text-xs lg:text-sm space-y-1 lg:space-y-2 text-gray-700">
-                    <li>• Social Media Admin</li>
-                    <li>• Rural Da'wah Team</li>
-                    <li>• Community Recruiters</li>
-                  </ul>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-xl transition-shadow duration-300">
-                <CardHeader className="text-center bg-orange-600 text-white rounded-t-lg p-4">
-                  <CardTitle className="text-base lg:text-lg">💼 Finance & Tech</CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 lg:p-4">
-                  <ul className="text-xs lg:text-sm space-y-1 lg:space-y-2 text-gray-700">
-                    <li>• Donations Manager</li>
-                    <li>• Web Administrators</li>
-                    <li>• Project Coordinators</li>
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-
-          {/* Mobile-optimized Call to Action */}
-          <Card className="max-w-4xl mx-auto bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200">
-            <CardHeader className="text-center p-4 lg:p-6">
-              <CardTitle className="text-2xl lg:text-3xl text-green-800">Ready to Make a Difference?</CardTitle>
-            </CardHeader>
-            <CardContent className="text-center space-y-4 lg:space-y-6 p-4 lg:p-8">
-              <p className="text-sm lg:text-lg text-gray-700 leading-relaxed">
-                Join our team of dedicated volunteers and help us spread the beautiful message of Islam. 
-                Whether you're skilled in content creation, design, technology, fundraising, or simply have the passion 
-                to help, we have a place for you in our organized professional structure.
+              {/* Main Heading */}
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+                Welcome to{' '}
+                <span className="bg-gradient-to-r from-teal-600 to-orange-600 bg-clip-text text-transparent">
+                  Fadis Youth
+                </span>
+              </h1>
+              
+              <p className="text-xl lg:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+                Empowering young Muslims to create positive change in their communities through 
+                faith-based initiatives and collaborative action.
               </p>
-              <div className="bg-white p-4 lg:p-6 rounded-lg shadow-md">
-                <h3 className="text-lg lg:text-xl font-semibold text-green-800 mb-3 lg:mb-4">We Need 18-22 Committed Volunteers</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 lg:gap-4 text-left">
-                  <div>
-                    <h4 className="font-semibold text-green-700 text-sm lg:text-base">Content & Media Teams:</h4>
-                    <p className="text-xs lg:text-sm text-gray-600">Writers, designers, video editors</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-green-700 text-sm lg:text-base">Management & Finance:</h4>
-                    <p className="text-xs lg:text-sm text-gray-600">Project managers, donation coordinators</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-green-700 text-sm lg:text-base">Outreach & Da'wah:</h4>
-                    <p className="text-xs lg:text-sm text-gray-600">Social media, rural outreach, recruitment</p>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-green-700 text-sm lg:text-base">Tech & Administration:</h4>
-                    <p className="text-xs lg:text-sm text-gray-600">Website management, task coordination</p>
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-3 lg:space-y-4">
-                <div className="flex flex-col sm:flex-row justify-center gap-3 lg:gap-4">
-                  <Link to="/application" className="w-full sm:w-auto">
-                    <Button size="lg" className="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                      Apply to Join Our Team
-                    </Button>
-                  </Link>
-                  <Link to="/auth" className="w-full sm:w-auto">
-                    <Button size="lg" variant="outline" className="w-full sm:w-auto border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 lg:px-12 py-3 lg:py-4 text-base lg:text-lg rounded-full shadow-lg hover:shadow-xl transition-all">
-                      Member Login
-                    </Button>
-                  </Link>
-                </div>
-                <p className="text-sm lg:text-base text-gray-700 italic">
-                  "And whoever volunteers good - then indeed, Allah is appreciative and Knowing." (Quran 2:158)
+
+              {/* Arabic Text */}
+              <div className="mb-8">
+                <p className="text-lg text-teal-700 font-medium mb-2">
+                  "إنما المؤمنون إخوة"
+                </p>
+                <p className="text-gray-600 italic">
+                  "The believers are brothers" - Quran 49:10
                 </p>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Mobile-optimized Contact Section */}
-          <div className="mt-16 lg:mt-20 text-center">
-            <h3 className="text-xl lg:text-2xl font-bold text-green-800 mb-6 lg:mb-8">Contact Us</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6 max-w-4xl mx-auto">
-              <div className="flex flex-col items-center space-y-2 lg:space-y-3 p-4 bg-white rounded-lg shadow-sm">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Mail className="h-5 w-5 lg:h-6 lg:w-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 text-sm lg:text-base">Email</h4>
-                  <p className="text-gray-600 text-xs lg:text-sm">info@ansaruyouth.org</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center space-y-2 lg:space-y-3 p-4 bg-white rounded-lg shadow-sm">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <Phone className="h-5 w-5 lg:h-6 lg:w-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 text-sm lg:text-base">Phone</h4>
-                  <p className="text-gray-600 text-xs lg:text-sm">+1 (555) 123-4567</p>
-                </div>
-              </div>
-              <div className="flex flex-col items-center space-y-2 lg:space-y-3 p-4 bg-white rounded-lg shadow-sm">
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <MapPin className="h-5 w-5 lg:h-6 lg:w-6 text-green-600" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-green-800 text-sm lg:text-base">Location</h4>
-                  <p className="text-gray-600 text-xs lg:text-sm">Global Organization</p>
-                </div>
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button 
+                  size="lg"
+                  className="bg-gradient-to-r from-teal-600 to-orange-600 hover:from-teal-700 hover:to-orange-700 text-white font-semibold px-8 py-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+                  onClick={() => window.location.href = '/application'}
+                >
+                  <Heart className="h-5 w-5 mr-2" />
+                  Join Our Mission
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  className="border-2 border-teal-600 text-teal-600 hover:bg-teal-600 hover:text-white font-semibold px-8 py-4 rounded-full transition-all duration-200"
+                  onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <BookOpen className="h-5 w-5 mr-2" />
+                  Learn More
+                </Button>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Footer */}
-          <div className="text-center mt-16 lg:mt-20 space-y-4 lg:space-y-6">
-            <p className="text-base lg:text-lg text-gray-700">
-              May Allah accept our efforts and guide us on the straight path
-            </p>
-            <div className="text-sm lg:text-base text-gray-600 space-y-2 sm:space-y-0 sm:space-x-6 flex flex-col sm:flex-row flex-wrap justify-center">
-              <Link to="/privacy" className="hover:text-green-600 transition-colors underline">Privacy Policy</Link>
-              <span className="hidden sm:inline">•</span>
-              <Link to="/terms" className="hover:text-green-600 transition-colors underline">Terms of Service</Link>
-              <span className="hidden sm:inline">•</span>
-              <Link to="/application" className="hover:text-green-600 transition-colors underline">Join Application</Link>
-              <span className="hidden sm:inline">•</span>
-              <a href="https://ansaar.netlify.app" target="_blank" rel="noopener noreferrer" className="hover:text-green-600 transition-colors underline">Team Structure</a>
+        {/* Stats Section */}
+        <section className="py-12 px-4 bg-white/70 backdrop-blur-sm">
+          <div className="container mx-auto max-w-6xl">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <Card key={index} className="text-center border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardContent className="p-6">
+                      <Icon className="h-8 w-8 text-teal-600 mx-auto mb-3" />
+                      <h3 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-1">{stat.number}</h3>
+                      <p className="text-gray-600 font-medium">{stat.label}</p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Features Section */}
+        <section id="about" className="py-16 px-4">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                Why Choose Fadis Youth?
+              </h2>
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                We're dedicated to creating meaningful change through Islamic values and modern approaches
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <Card key={index} className="group border-0 shadow-lg bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                    <CardHeader className="text-center pb-4">
+                      <div className={`w-16 h-16 rounded-full ${feature.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                        <Icon className="h-8 w-8" />
+                      </div>
+                      <CardTitle className="text-xl font-semibold text-gray-800">
+                        {feature.title}
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-center">
+                      <p className="text-gray-600 leading-relaxed">
+                        {feature.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Impact Areas */}
+        <section className="py-16 px-4 bg-gradient-to-r from-teal-600/10 to-orange-600/10">
+          <div className="container mx-auto max-w-6xl">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+                Our Impact Areas
+              </h2>
+              <p className="text-xl text-gray-600">
+                Making a difference across multiple domains
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3 justify-center">
+              {impactAreas.map((area, index) => (
+                <Badge 
+                  key={index}
+                  variant="secondary" 
+                  className="text-lg px-6 py-3 bg-gradient-to-r from-teal-100 to-orange-100 text-gray-800 border border-teal-200 hover:from-teal-200 hover:to-orange-200 transition-all duration-200 cursor-default"
+                >
+                  {area}
+                </Badge>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Call to Action */}
+        <section className="py-16 px-4">
+          <div className="container mx-auto max-w-4xl">
+            <Card className="border-0 shadow-2xl bg-gradient-to-r from-teal-600 to-orange-600 text-white overflow-hidden relative">
+              <div className="absolute inset-0 bg-black/10"></div>
+              <CardContent className="p-8 lg:p-12 text-center relative z-10">
+                <Star className="h-16 w-16 text-yellow-300 mx-auto mb-6" />
+                <h2 className="text-3xl lg:text-4xl font-bold mb-6">
+                  Ready to Make a Difference?
+                </h2>
+                <p className="text-xl mb-8 opacity-90">
+                  Join thousands of young Muslims who are actively building a better tomorrow. 
+                  Your journey towards meaningful impact starts here.
+                </p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    size="lg"
+                    variant="secondary"
+                    className="bg-white text-teal-600 hover:bg-gray-100 font-semibold px-8 py-4 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+                    onClick={() => window.location.href = '/application'}
+                  >
+                    <Zap className="h-5 w-5 mr-2" />
+                    Start Your Journey
+                    <ArrowRight className="h-5 w-5 ml-2" />
+                  </Button>
+                  
+                  <Button 
+                    size="lg"
+                    variant="outline"
+                    className="border-2 border-white text-white hover:bg-white hover:text-teal-600 font-semibold px-8 py-4 rounded-full transition-all duration-200"
+                    onClick={() => window.open('https://t.me/fadisyouth', '_blank')}
+                  >
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Join Community
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
       </div>
     </Layout>
   );

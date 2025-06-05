@@ -9,8 +9,10 @@ import AdminControls from '@/components/admin/AdminControls';
 import ApplicationsTable from '@/components/admin/ApplicationsTable';
 import ApplicationDetails from '@/components/admin/ApplicationDetails';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AlertTriangle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { AlertTriangle, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -39,31 +41,53 @@ const Admin = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
+  // Simple password protection - in production, this should be more secure
+  const ADMIN_PASSWORD = 'fadisyouth2024';
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
+  useEffect(() => {
+    // Check if admin is already authenticated
+    const isAdminAuth = localStorage.getItem('fadis_admin_auth');
+    if (isAdminAuth === 'true') {
       setIsAuthenticated(true);
-      
-      const { data: adminUser, error } = await supabase
-        .from('admin_users')
-        .select('role')
-        .eq('user_id', session.user.id)
-        .single();
-      
-      if (adminUser && adminUser.role === 'admin') {
-        setIsAdmin(true);
-        fetchApplications();
-      }
+      fetchApplications();
     } else {
       setLoading(false);
     }
+  }, []);
+
+  const handlePasswordLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+
+    // Simple password check
+    if (password === ADMIN_PASSWORD) {
+      localStorage.setItem('fadis_admin_auth', 'true');
+      setIsAuthenticated(true);
+      fetchApplications();
+      toast({
+        title: "Access Granted",
+        description: "Welcome to the admin dashboard",
+      });
+    } else {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect password",
+        variant: "destructive"
+      });
+    }
+    setLoginLoading(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('fadis_admin_auth');
+    setIsAuthenticated(false);
+    setPassword('');
+    window.location.href = '/';
   };
 
   const fetchApplications = async () => {
@@ -147,81 +171,99 @@ const Admin = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `ansaru-applications-${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `fadis-youth-applications-${new Date().toISOString().split('T')[0]}.csv`);
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  if (!isAuthenticated) {
+    return (
+      <Layout showSidebar={false}>
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-2xl border-0 bg-white/95 backdrop-blur">
+            <CardHeader className="bg-gradient-to-r from-teal-600 to-orange-600 text-white rounded-t-lg text-center">
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 rounded-full overflow-hidden bg-white shadow-lg p-3">
+                  <img 
+                    src="/lovable-uploads/9ffdc7fa-be78-4a04-8b3e-673407016278.png" 
+                    alt="Fadis Youth Logo" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              </div>
+              <CardTitle className="text-2xl font-bold flex items-center justify-center">
+                <Lock className="h-6 w-6 mr-2" />
+                Admin Access
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-8">
+              <form onSubmit={handlePasswordLogin} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter admin password"
+                      className="pl-10 pr-10 h-12 border-2 border-gray-200 focus:border-teal-500 rounded-lg"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-2 h-8 w-8"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+                
+                <Button
+                  type="submit"
+                  disabled={loginLoading}
+                  className="w-full h-12 bg-gradient-to-r from-teal-600 to-orange-600 hover:from-teal-700 hover:to-orange-700 text-white font-medium rounded-lg"
+                >
+                  {loginLoading ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  ) : (
+                    'Access Dashboard'
+                  )}
+                </Button>
+              </form>
+              
+              <div className="mt-6 text-center">
+                <Button
+                  variant="link"
+                  onClick={() => window.location.href = '/'}
+                  className="text-teal-600 hover:text-teal-800"
+                >
+                  Back to Home
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Layout>
+    );
+  }
+
   if (loading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 to-orange-50 p-4">
           <div className="container mx-auto max-w-6xl">
             <Card className="shadow-xl border-0">
               <CardContent className="p-8">
                 <div className="flex items-center justify-center h-64">
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600"></div>
+                  <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-teal-600"></div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
-          <div className="container mx-auto max-w-md">
-            <Card className="shadow-xl border-0">
-              <CardHeader className="bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-t-lg">
-                <CardTitle className="text-2xl font-bold text-center">Authentication Required</CardTitle>
-              </CardHeader>
-              <CardContent className="p-8 text-center">
-                <AlertTriangle className="h-20 w-20 text-red-500 mx-auto mb-6" />
-                <h2 className="text-xl font-semibold mb-4">Access Restricted</h2>
-                <p className="text-gray-600 mb-6">
-                  You need to be logged in to access the admin dashboard.
-                </p>
-                <Button 
-                  className="bg-green-600 hover:bg-green-700 w-full"
-                  onClick={() => window.location.href = '/auth'}
-                >
-                  Go to Login
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
-          <div className="container mx-auto max-w-md">
-            <Card className="shadow-xl border-0">
-              <CardHeader className="bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-t-lg">
-                <CardTitle className="text-2xl font-bold text-center">Access Denied</CardTitle>
-              </CardHeader>
-              <CardContent className="p-8 text-center">
-                <AlertTriangle className="h-20 w-20 text-red-500 mx-auto mb-6" />
-                <h2 className="text-xl font-semibold mb-4">Admin Access Required</h2>
-                <p className="text-gray-600 mb-6">
-                  You don't have permission to access the admin dashboard.
-                </p>
-                <Button 
-                  className="bg-green-600 hover:bg-green-700 w-full"
-                  onClick={() => window.location.href = '/'}
-                >
-                  Return to Home
-                </Button>
               </CardContent>
             </Card>
           </div>
@@ -232,9 +274,9 @@ const Admin = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 p-4">
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-orange-50 to-amber-50 p-4">
         <div className="container mx-auto">
-          <AdminHeader />
+          <AdminHeader onLogout={handleLogout} />
           
           <Card className="shadow-xl border-0 mb-6">
             <CardContent className="p-6">

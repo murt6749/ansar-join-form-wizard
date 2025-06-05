@@ -5,13 +5,11 @@ import { Button } from '@/components/ui/button';
 import { 
   Home, 
   FileText, 
-  Shield, 
-  Users, 
-  LogOut,
-  X
+  Shield,
+  X,
+  Heart
 } from 'lucide-react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { supabase } from '@/integrations/supabase/client';
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -40,35 +38,24 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
     };
   }, [isOpen]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = '/auth';
-  };
-
   const menuItems = [
     { 
       icon: Home, 
       label: t.nav.home, 
       path: '/',
-      color: 'text-green-600 hover:bg-green-50'
+      color: 'text-teal-600 hover:bg-teal-50'
     },
     { 
       icon: FileText, 
-      label: t.nav.application, 
+      label: 'Join Us', 
       path: '/application',
-      color: 'text-blue-600 hover:bg-blue-50'
+      color: 'text-orange-600 hover:bg-orange-50'
     },
     { 
       icon: Shield, 
       label: t.nav.admin, 
       path: '/admin',
-      color: 'text-purple-600 hover:bg-purple-50'
-    },
-    { 
-      icon: Users, 
-      label: t.nav.login, 
-      path: '/auth',
-      color: 'text-orange-600 hover:bg-orange-50'
+      color: 'text-amber-600 hover:bg-amber-50'
     }
   ];
 
@@ -95,18 +82,21 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-blue-50">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-teal-50 to-orange-50">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-green-400 to-blue-500 p-2 shadow-lg">
+            <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-teal-400 to-orange-500 p-2 shadow-lg">
               <img 
-                src="/lovable-uploads/5e53261d-6466-445b-8439-cb514a2a1343.png" 
-                alt="Ansaru Logo" 
+                src="/lovable-uploads/9ffdc7fa-be78-4a04-8b3e-673407016278.png" 
+                alt="Fadis Youth Logo" 
                 className="w-full h-full object-contain"
               />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-gray-800">Ansaru Youth</h2>
-              <p className="text-sm text-gray-600">للدين خدمة</p>
+              <h2 className="text-lg font-bold text-gray-800">Fadis Youth</h2>
+              <p className="text-sm text-gray-600 flex items-center">
+                <Heart className="h-3 w-3 mr-1 text-red-500" />
+                Building futures
+              </p>
             </div>
           </div>
           
@@ -130,7 +120,7 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
                   variant={isActive(item.path) ? "default" : "ghost"}
                   className={`w-full justify-start space-x-3 h-12 text-left ${
                     isActive(item.path) 
-                      ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-md' 
+                      ? 'bg-gradient-to-r from-teal-600 to-orange-600 text-white shadow-md' 
                       : `${item.color} border border-transparent hover:border-gray-200`
                   }`}
                 >
@@ -145,23 +135,15 @@ const MobileSidebar = ({ isOpen, onClose }: MobileSidebarProps) => {
         {/* Footer Links */}
         <div className="p-4 border-t border-gray-200 space-y-2 bg-gray-50">
           <Link to="/privacy">
-            <Button variant="ghost" className="w-full justify-start text-sm text-gray-600 hover:text-green-600 h-10">
+            <Button variant="ghost" className="w-full justify-start text-sm text-gray-600 hover:text-teal-600 h-10">
               {t.nav.privacy}
             </Button>
           </Link>
           <Link to="/terms">
-            <Button variant="ghost" className="w-full justify-start text-sm text-gray-600 hover:text-green-600 h-10">
+            <Button variant="ghost" className="w-full justify-start text-sm text-gray-600 hover:text-teal-600 h-10">
               {t.nav.terms}
             </Button>
           </Link>
-          <Button 
-            variant="ghost" 
-            onClick={handleLogout}
-            className="w-full justify-start text-sm text-red-600 hover:text-red-700 hover:bg-red-50 h-10"
-          >
-            <LogOut className="h-4 w-4 mr-2" />
-            {t.nav.logout}
-          </Button>
         </div>
       </div>
     </>
