@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -21,39 +22,31 @@ const formSchema = z.object({
   full_name: z.string().min(2, {
     message: "Full name must be at least 2 characters.",
   }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
+  age: z.number().min(18).max(22),
+  gender: z.string().min(1, "Gender is required"),
+  country_city: z.string().min(2, {
+    message: "Country and city must be at least 2 characters.",
   }),
-  phone: z.string().min(8, {
+  phone_number: z.string().min(8, {
     message: "Phone number must be at least 8 characters.",
   }),
-  date_of_birth: z.string(),
-  gender: z.enum(['male', 'female', 'other']),
-  address: z.string().min(5, {
-    message: "Address must be at least 5 characters.",
+  telegram_username: z.string().optional(),
+  email_address: z.string().email({
+    message: "Please enter a valid email address.",
   }),
-  education_level: z.enum(['high_school', 'bachelor', 'master', 'phd']),
-  skills: z.string().min(10, {
-    message: "Skills must be at least 10 characters.",
+  why_join: z.string().min(20, {
+    message: "Why join must be at least 20 characters.",
   }),
-  experience: z.string().min(10, {
-    message: "Experience must be at least 10 characters.",
+  interest_areas: z.array(z.string()).min(1, "Select at least one interest area"),
+  skills_experience: z.string().optional(),
+  hours_per_week: z.string().min(1, "Hours per week is required"),
+  working_style: z.string().min(1, "Working style is required"),
+  weekly_meetings: z.string().min(1, "Weekly meetings preference is required"),
+  spiritual_motivation: z.string().min(20, {
+    message: "Spiritual motivation must be at least 20 characters.",
   }),
-  volunteer_areas: z.string().min(10, {
-    message: "Volunteer areas must be at least 10 characters.",
-  }),
-  motivation: z.string().min(20, {
-    message: "Motivation must be at least 20 characters.",
-  }),
-  availability: z.string().min(10, {
-    message: "Availability must be at least 10 characters.",
-  }),
-  previous_volunteer: z.string().min(10, {
-    message: "Previous volunteer experience must be at least 10 characters.",
-  }),
-  references: z.string().min(20, {
-    message: "References must be at least 20 characters.",
-  }),
+  join_telegram_group: z.boolean().default(false),
+  questions_notes: z.string().optional(),
 });
 
 const ApplicationForm = () => {
@@ -69,24 +62,26 @@ const ApplicationForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       full_name: '',
-      email: '',
-      phone: '',
-      date_of_birth: '',
+      age: 18,
       gender: '',
-      address: '',
-      education_level: '',
-      skills: '',
-      experience: '',
-      volunteer_areas: '',
-      motivation: '',
-      availability: '',
-      previous_volunteer: '',
-      references: ''
+      country_city: '',
+      phone_number: '',
+      telegram_username: '',
+      email_address: '',
+      why_join: '',
+      interest_areas: [],
+      skills_experience: '',
+      hours_per_week: '',
+      working_style: '',
+      weekly_meetings: '',
+      spiritual_motivation: '',
+      join_telegram_group: false,
+      questions_notes: ''
     }
   });
 
   // Auto-save draft
-  useDraftSave('volunteer-application', form.watch());
+  useDraftSave('ansar-application', form.watch());
 
   // Swipe gesture support
   const swipeRef = useSwipeGesture({
@@ -122,23 +117,23 @@ const ApplicationForm = () => {
       mediumTap();
 
       const { error } = await supabase
-        .from('volunteer_applications')
+        .from('ansar_applications')
         .insert([values]);
 
       if (error) throw error;
 
       notificationFeedback();
       toast({
-        title: t.form.success.title,
-        description: t.form.success.description,
+        title: t.applicationForm.success.title,
+        description: t.applicationForm.success.message,
       });
 
       form.reset();
       setCurrentStep(1);
     } catch (error: any) {
       toast({
-        title: t.form.error.title,
-        description: error.message || t.form.error.description,
+        title: t.common.error,
+        description: error.message || "An error occurred",
         variant: "destructive",
       });
     } finally {
@@ -147,22 +142,22 @@ const ApplicationForm = () => {
   };
 
   const stepIcons = [
-    { icon: User, label: t.form.steps.personal },
-    { icon: BookOpen, label: t.form.steps.education },
-    { icon: Target, label: t.form.steps.volunteer },
-    { icon: CheckCircle, label: t.form.steps.review }
+    { icon: User, label: t.applicationForm.sections.personalInfo },
+    { icon: BookOpen, label: t.applicationForm.sections.interest },
+    { icon: Target, label: t.applicationForm.sections.availability },
+    { icon: CheckCircle, label: t.applicationForm.sections.finalDetails }
   ];
 
   const getStepFields = (step: number) => {
     switch(step) {
       case 1:
-        return ['full_name', 'email', 'phone', 'date_of_birth', 'gender', 'address'];
+        return ['full_name', 'age', 'gender', 'country_city', 'phone_number', 'telegram_username', 'email_address'];
       case 2:
-        return ['education_level', 'skills', 'experience'];
+        return ['why_join', 'interest_areas', 'skills_experience'];
       case 3:
-        return ['volunteer_areas', 'motivation', 'availability', 'previous_volunteer'];
+        return ['hours_per_week', 'working_style', 'weekly_meetings', 'spiritual_motivation'];
       case 4:
-        return ['references'];
+        return ['join_telegram_group', 'questions_notes'];
       default:
         return [];
     }
@@ -183,6 +178,17 @@ const ApplicationForm = () => {
     }
   };
 
+  const interestOptions = [
+    "Education & Outreach",
+    "Community Support",
+    "Digital Media",
+    "Event Organization",
+    "Research & Development",
+    "Translation Services",
+    "Youth Mentoring",
+    "Social Services"
+  ];
+
   return (
     <Layout>
       <div ref={swipeRef} className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-emerald-50 py-4 md:py-8">
@@ -191,10 +197,10 @@ const ApplicationForm = () => {
           <div className="mb-6 md:mb-8">
             <div className="text-center mb-6">
               <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-                {t.form.title}
+                {t.applicationForm.title}
               </h1>
               <p className="text-gray-600 text-sm md:text-base">
-                {t.form.subtitle}
+                {t.applicationForm.subtitle}
               </p>
             </div>
 
@@ -257,10 +263,10 @@ const ApplicationForm = () => {
                 {stepIcons[currentStep - 1].label}
               </CardTitle>
               <CardDescription className="text-gray-600">
-                {currentStep === 1 && t.form.steps.personalDesc}
-                {currentStep === 2 && t.form.steps.educationDesc}
-                {currentStep === 3 && t.form.steps.volunteerDesc}
-                {currentStep === 4 && t.form.steps.reviewDesc}
+                {currentStep === 1 && t.applicationForm.sections.personalInfoDesc}
+                {currentStep === 2 && t.applicationForm.sections.interestDesc}
+                {currentStep === 3 && t.applicationForm.sections.availabilityDesc}
+                {currentStep === 4 && t.applicationForm.sections.finalDetailsDesc}
               </CardDescription>
             </CardHeader>
 
@@ -277,11 +283,11 @@ const ApplicationForm = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-gray-700 font-medium">
-                                {t.form.fullName} *
+                                {t.applicationForm.fields.fullName} *
                               </FormLabel>
                               <FormControl>
                                 <Input 
-                                  placeholder={t.form.fullNamePlaceholder}
+                                  placeholder="Enter your full name"
                                   className="border-gray-300 focus:border-green-500 focus:ring-green-500"
                                   {...field} 
                                 />
@@ -293,16 +299,66 @@ const ApplicationForm = () => {
 
                         <FormField
                           control={form.control}
-                          name="email"
+                          name="age"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-gray-700 font-medium">
-                                {t.form.email} *
+                                {t.applicationForm.fields.age} *
                               </FormLabel>
                               <FormControl>
                                 <Input 
-                                  type="email"
-                                  placeholder={t.form.emailPlaceholder}
+                                  type="number"
+                                  min="18"
+                                  max="22"
+                                  placeholder="Age (18-22)"
+                                  className="border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                  {...field}
+                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <FormField
+                          control={form.control}
+                          name="gender"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-700 font-medium">
+                                {t.applicationForm.fields.gender} *
+                              </FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500">
+                                    <SelectValue placeholder="Select gender" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="male">Male</SelectItem>
+                                  <SelectItem value="female">Female</SelectItem>
+                                  <SelectItem value="other">Other</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="country_city"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-gray-700 font-medium">
+                                {t.applicationForm.fields.countryCity} *
+                              </FormLabel>
+                              <FormControl>
+                                <Input 
+                                  placeholder="Country, City"
                                   className="border-gray-300 focus:border-green-500 focus:ring-green-500"
                                   {...field} 
                                 />
@@ -316,15 +372,15 @@ const ApplicationForm = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormField
                           control={form.control}
-                          name="phone"
+                          name="phone_number"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-gray-700 font-medium">
-                                {t.form.phone} *
+                                {t.applicationForm.fields.phoneNumber} *
                               </FormLabel>
                               <FormControl>
                                 <Input 
-                                  placeholder={t.form.phonePlaceholder}
+                                  placeholder="WhatsApp number"
                                   className="border-gray-300 focus:border-green-500 focus:ring-green-500"
                                   {...field} 
                                 />
@@ -336,17 +392,17 @@ const ApplicationForm = () => {
 
                         <FormField
                           control={form.control}
-                          name="date_of_birth"
+                          name="telegram_username"
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-gray-700 font-medium">
-                                {t.form.dateOfBirth} *
+                                {t.applicationForm.fields.telegramUsername}
                               </FormLabel>
                               <FormControl>
-                                <Input
-                                  type="date"
+                                <Input 
+                                  placeholder="@username"
                                   className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                  {...field}
+                                  {...field} 
                                 />
                               </FormControl>
                               <FormMessage />
@@ -357,42 +413,18 @@ const ApplicationForm = () => {
 
                       <FormField
                         control={form.control}
-                        name="gender"
+                        name="email_address"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-gray-700 font-medium">
-                              {t.form.gender} *
-                            </FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500">
-                                  <SelectValue placeholder={t.form.genderPlaceholder} />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="male">{t.form.male}</SelectItem>
-                                <SelectItem value="female">{t.form.female}</SelectItem>
-                                <SelectItem value="other">{t.form.other}</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="address"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              {t.form.address} *
+                              {t.applicationForm.fields.emailAddress} *
                             </FormLabel>
                             <FormControl>
-                              <Textarea
-                                placeholder={t.form.addressPlaceholder}
+                              <Input 
+                                type="email"
+                                placeholder="your@email.com"
                                 className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
+                                {...field} 
                               />
                             </FormControl>
                             <FormMessage />
@@ -402,28 +434,106 @@ const ApplicationForm = () => {
                     </div>
                   )}
 
-                  {/* Step 2: Education & Skills */}
+                  {/* Step 2: Interest & Motivation */}
                   {currentStep === 2 && (
                     <div className="space-y-4 animate-fade-in">
                       <FormField
                         control={form.control}
-                        name="education_level"
+                        name="why_join"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-gray-700 font-medium">
-                              {t.form.educationLevel} *
+                              {t.applicationForm.fields.whyJoin} *
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={t.applicationForm.fields.whyJoinDesc}
+                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="interest_areas"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700 font-medium">
+                              {t.applicationForm.fields.interestAreas} *
+                            </FormLabel>
+                            <div className="grid grid-cols-2 gap-2">
+                              {interestOptions.map((option) => (
+                                <label key={option} className="flex items-center space-x-2 p-2 border rounded hover:bg-gray-50">
+                                  <input
+                                    type="checkbox"
+                                    checked={field.value?.includes(option) || false}
+                                    onChange={(e) => {
+                                      const currentValue = field.value || [];
+                                      if (e.target.checked) {
+                                        field.onChange([...currentValue, option]);
+                                      } else {
+                                        field.onChange(currentValue.filter(v => v !== option));
+                                      }
+                                    }}
+                                    className="rounded border-gray-300"
+                                  />
+                                  <span className="text-sm">{option}</span>
+                                </label>
+                              ))}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="skills_experience"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700 font-medium">
+                              {t.applicationForm.fields.skillsExperience}
+                            </FormLabel>
+                            <FormControl>
+                              <Textarea
+                                placeholder={t.applicationForm.fields.skillsExperienceDesc}
+                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  )}
+
+                  {/* Step 3: Availability */}
+                  {currentStep === 3 && (
+                    <div className="space-y-4 animate-fade-in">
+                      <FormField
+                        control={form.control}
+                        name="hours_per_week"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700 font-medium">
+                              {t.applicationForm.fields.hoursPerWeek} *
                             </FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500">
-                                  <SelectValue placeholder={t.form.educationLevelPlaceholder} />
+                                  <SelectValue placeholder="Select hours per week" />
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                <SelectItem value="high_school">{t.form.highSchool}</SelectItem>
-                                <SelectItem value="bachelor">{t.form.bachelor}</SelectItem>
-                                <SelectItem value="master">{t.form.master}</SelectItem>
-                                <SelectItem value="phd">{t.form.phd}</SelectItem>
+                                <SelectItem value="1-3">1-3 hours</SelectItem>
+                                <SelectItem value="4-6">4-6 hours</SelectItem>
+                                <SelectItem value="7-10">7-10 hours</SelectItem>
+                                <SelectItem value="10+">10+ hours</SelectItem>
                               </SelectContent>
                             </Select>
                             <FormMessage />
@@ -433,19 +543,24 @@ const ApplicationForm = () => {
 
                       <FormField
                         control={form.control}
-                        name="skills"
+                        name="working_style"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-gray-700 font-medium">
-                              {t.form.skills} *
+                              {t.applicationForm.fields.workingStyle} *
                             </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t.form.skillsPlaceholder}
-                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
-                              />
-                            </FormControl>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500">
+                                  <SelectValue placeholder="Select working style" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="independent">Independent work</SelectItem>
+                                <SelectItem value="collaborative">Collaborative work</SelectItem>
+                                <SelectItem value="both">Both independent and collaborative</SelectItem>
+                              </SelectContent>
+                            </Select>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -453,15 +568,40 @@ const ApplicationForm = () => {
 
                       <FormField
                         control={form.control}
-                        name="experience"
+                        name="weekly_meetings"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-gray-700 font-medium">
-                              {t.form.experience} *
+                              {t.applicationForm.fields.weeklyMeetings} *
+                            </FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger className="border-gray-300 focus:border-green-500 focus:ring-green-500">
+                                  <SelectValue placeholder="Can you attend weekly meetings?" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="yes">Yes, I can attend</SelectItem>
+                                <SelectItem value="no">No, I cannot attend</SelectItem>
+                                <SelectItem value="sometimes">Sometimes, depends on schedule</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="spiritual_motivation"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-gray-700 font-medium">
+                              {t.applicationForm.fields.spiritualMotivation} *
                             </FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder={t.form.experiencePlaceholder}
+                                placeholder={t.applicationForm.fields.spiritualMotivationDesc}
                                 className="border-gray-300 focus:border-green-500 focus:ring-green-500"
                                 {...field}
                               />
@@ -473,105 +613,45 @@ const ApplicationForm = () => {
                     </div>
                   )}
 
-                  {/* Step 3: Volunteer Preferences */}
-                  {currentStep === 3 && (
-                    <div className="space-y-4 animate-fade-in">
-                      <FormField
-                        control={form.control}
-                        name="volunteer_areas"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              {t.form.volunteerAreas} *
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t.form.volunteerAreasPlaceholder}
-                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="motivation"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              {t.form.motivation} *
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t.form.motivationPlaceholder}
-                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="availability"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              {t.form.availability} *
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t.form.availabilityPlaceholder}
-                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="previous_volunteer"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-gray-700 font-medium">
-                              {t.form.previousVolunteer} *
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                placeholder={t.form.previousVolunteerPlaceholder}
-                                className="border-gray-300 focus:border-green-500 focus:ring-green-500"
-                                {...field}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  )}
-
-                  {/* Step 4: References */}
+                  {/* Step 4: Final Details */}
                   {currentStep === 4 && (
                     <div className="space-y-4 animate-fade-in">
                       <FormField
                         control={form.control}
-                        name="references"
+                        name="join_telegram_group"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                            <FormControl>
+                              <input
+                                type="checkbox"
+                                checked={field.value}
+                                onChange={field.onChange}
+                                className="rounded border-gray-300"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                {t.applicationForm.fields.joinTelegramGroup}
+                              </FormLabel>
+                              <p className="text-sm text-muted-foreground">
+                                {t.applicationForm.fields.joinTelegramGroupDesc}
+                              </p>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="questions_notes"
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel className="text-gray-700 font-medium">
-                              {t.form.references} *
+                              {t.applicationForm.fields.questionsNotes}
                             </FormLabel>
                             <FormControl>
                               <Textarea
-                                placeholder={t.form.referencesPlaceholder}
+                                placeholder={t.applicationForm.fields.questionsNotesDesc}
                                 className="border-gray-300 focus:border-green-500 focus:ring-green-500"
                                 {...field}
                               />
@@ -593,7 +673,7 @@ const ApplicationForm = () => {
                       className="flex items-center space-x-2 px-6 py-3"
                     >
                       <ChevronLeft className="h-4 w-4" />
-                      <span>{t.form.previous}</span>
+                      <span>{t.applicationForm.buttons.previous}</span>
                     </Button>
 
                     {currentStep < totalSteps ? (
@@ -602,7 +682,7 @@ const ApplicationForm = () => {
                         onClick={handleNext}
                         className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 px-6 py-3"
                       >
-                        <span>{t.form.next}</span>
+                        <span>{t.applicationForm.buttons.next}</span>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     ) : (
@@ -616,7 +696,7 @@ const ApplicationForm = () => {
                         ) : (
                           <Send className="h-4 w-4" />
                         )}
-                        <span>{isSubmitting ? t.form.submitting : t.form.submit}</span>
+                        <span>{isSubmitting ? t.applicationForm.buttons.submitting : t.applicationForm.buttons.submit}</span>
                       </Button>
                     )}
                   </div>
@@ -628,7 +708,7 @@ const ApplicationForm = () => {
           {/* Mobile Swipe Hint */}
           <div className="text-center mt-4 md:hidden">
             <p className="text-sm text-gray-500">
-              💡 {t.form.swipeHint || "Swipe left/right to navigate between steps"}
+              💡 Swipe left/right to navigate between steps
             </p>
           </div>
         </div>
