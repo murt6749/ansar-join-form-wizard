@@ -63,6 +63,13 @@ export const en = {
     dashboard: 'Dashboard',
     joinUs: 'Join Us',
     teamStructure: 'Team Structure',
+    application: 'Application',
+    admin: 'Admin'
+  },
+  navigation: {
+    home: 'Home',
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
     application: 'Application'
   },
   home: {
@@ -77,25 +84,7 @@ export const en = {
     visionDescription: 'A world where Islamic youth are leaders in positive change, guided by Islamic principles and committed to excellence.',
     ourValues: 'Our Values',
     valuesDescription: 'We uphold the highest Islamic values including integrity, compassion, justice, and service to humanity.',
-    getStarted: 'Get Started',
-    features: {
-      community: {
-        title: 'Global Community',
-        description: 'Connect with like-minded Muslims from around the world'
-      },
-      education: {
-        title: 'Islamic Education',
-        description: 'Learn and grow in your understanding of Islam'
-      },
-      service: {
-        title: 'Community Service',
-        description: 'Make a positive impact in your local community'
-      },
-      leadership: {
-        title: 'Leadership Development',
-        description: 'Develop skills to become future Islamic leaders'
-      }
-    }
+    getStarted: 'Get Started'
   },
   auth: {
     login: 'Login',
@@ -158,6 +147,70 @@ export const en = {
     required: 'This field is required',
     invalidEmail: 'Please enter a valid email address',
     invalidPhone: 'Please enter a valid phone number'
+  },
+  applicationForm: {
+    title: 'Join Ansaru Youth',
+    subtitle: 'Professional Islamic Organization Application',
+    description: 'Help us build a team of 18-22 committed volunteers',
+    sections: {
+      personalInfo: 'Personal Information',
+      personalInfoDesc: 'Tell us about yourself',
+      interest: 'Your Interest in Ansaru Youth',
+      interestDesc: 'Help us understand your motivation and abilities',
+      availability: 'Your Availability',
+      availabilityDesc: 'Help us understand your time commitment',
+      finalDetails: 'Final Details',
+      finalDetailsDesc: 'Complete your application'
+    },
+    fields: {
+      fullName: 'Full Name',
+      age: 'Age',
+      gender: 'Gender',
+      countryCity: 'Country and City',
+      phoneNumber: 'Phone Number (WhatsApp)',
+      telegramUsername: 'Telegram Username',
+      telegramUsernameDesc: 'Optional - for group communication',
+      emailAddress: 'Email Address',
+      whyJoin: 'Why do you want to join Ansaru Youth?',
+      whyJoinDesc: 'Share your motivation and what draws you to Islamic work',
+      interestAreas: 'Which team(s) would you like to help?',
+      interestAreasDesc: 'Choose one or more areas where you\'d like to contribute',
+      skillsExperience: 'What skills or experience do you have?',
+      skillsExperienceDesc: 'List relevant skills, tools you know, or past experience',
+      hoursPerWeek: 'How many hours per week can you commit?',
+      workingStyle: 'Preferred Working Style',
+      weeklyMeetings: 'Can you join weekly virtual meetings?',
+      weeklyMeetingsDesc: 'We have weekly team coordination meetings',
+      spiritualMotivation: 'What motivates you spiritually to do Islamic work?',
+      spiritualMotivationDesc: 'Share your spiritual motivation and what drives you to serve',
+      joinTelegramGroup: 'Would you like to be added to our team Telegram group?',
+      joinTelegramGroupDesc: 'This is where we coordinate daily activities and communicate',
+      questionsNotes: 'Do you have any questions or additional notes?',
+      questionsNotesDesc: 'Feel free to ask questions or share anything else you\'d like us to know'
+    },
+    buttons: {
+      next: 'Next Section →',
+      previous: '← Previous',
+      final: 'Final Section →',
+      submit: 'Submit Application ✨',
+      submitting: 'Submitting...',
+      returnHome: 'Return to Home',
+      saveDraft: '💾 Save Draft'
+    },
+    success: {
+      title: 'Application Successfully Submitted!',
+      message: 'Jazakumullahu khayran for applying to join Ansaru Youth!',
+      description: 'Our management team will review your application and contact you soon. May Allah accept your intention and efforts.',
+      quote: '"And whoever volunteers good - then indeed, Allah is appreciative and Knowing." (Quran 2:158)'
+    },
+    validation: {
+      required: 'This field is required',
+      selectAtLeastOne: 'Please select at least one area'
+    }
+  },
+  payment: {
+    notice: '💰 Free to Apply - $0.00',
+    description: 'This application is completely free. No payment required.'
   },
   admin: {
     dashboard: 'Admin Dashboard',
@@ -227,5 +280,47 @@ export const en = {
     saved: 'Draft saved automatically',
     restored: 'Draft restored',
     clear: 'Clear draft'
+  },
+  privacy: {
+    title: 'Privacy Policy',
+    subtitle: 'Ansaru Youth Organization',
+    sections: {
+      infoWeCollect: 'Information We Collect',
+      howWeUse: 'How We Use Your Information',
+      infoSharing: 'Information Sharing',
+      dataSecurity: 'Data Security',
+      yourRights: 'Your Rights',
+      contactUs: 'Contact Us'
+    },
+    content: {
+      infoWeCollect: 'When you apply to join Ansaru Youth, we collect personal information (name, age, gender, location), contact information (email, phone number, Telegram username), information about your interests and skills, your availability and work preferences, and your spiritual motivation and reasons for joining.',
+      howWeUse: 'We use your information to review and process your application, communicate with you about your application status, match you with appropriate volunteer opportunities, add you to relevant communication channels (with your permission), and coordinate Islamic educational and outreach activities.',
+      infoSharing: 'We do not sell, trade, or otherwise transfer your personal information to outside parties. Your information is accessible only to Ansaru Youth administrators and team leaders who need it to coordinate volunteer activities and Islamic outreach efforts.',
+      dataSecurity: 'We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. Your data is stored securely and access is limited to authorized personnel only.',
+      yourRights: 'You have the right to request access to your personal information, request correction of any inaccurate information, request deletion of your information, and opt out of volunteer activities at any time.',
+      contactUs: 'If you have any questions about this Privacy Policy or wish to exercise your rights, please contact us through our official communication channels.'
+    }
+  },
+  terms: {
+    title: 'Terms of Service',
+    subtitle: 'Ansaru Youth Organization',
+    sections: {
+      volunteerAgreement: 'Volunteer Agreement',
+      commitmentResponsibilities: 'Commitment and Responsibilities',
+      codeOfConduct: 'Code of Conduct',
+      intellectualProperty: 'Intellectual Property',
+      termination: 'Termination',
+      disclaimer: 'Disclaimer',
+      islamicPrinciples: 'Islamic Principles'
+    },
+    content: {
+      volunteerAgreement: 'By applying to join Ansaru Youth, you agree to volunteer your time and skills in accordance with Islamic principles and in alignment with our organization\'s mission of spreading Islamic knowledge and supporting the Muslim community.',
+      commitmentResponsibilities: 'Commit to the hours and responsibilities indicated in your application, participate in assigned tasks with dedication and Islamic ethics, maintain respectful communication with team members, follow Islamic guidelines in all organizational activities, and represent Ansaru Youth positively in all interactions.',
+      codeOfConduct: 'All activities must align with Islamic values and teachings, respect for all individuals regardless of background, professional and respectful communication, confidentiality of organizational information, and no promotion of content that contradicts Islamic principles.',
+      intellectualProperty: 'Content created as part of Ansaru Youth activities serves the organization\'s Islamic outreach mission. Contributors will be appropriately credited, and all content must be acceptable according to Islamic guidelines.',
+      termination: 'Either party may terminate the volunteer relationship at any time. We reserve the right to remove volunteers who do not follow Islamic principles or our code of conduct.',
+      disclaimer: 'Ansaru Youth is a volunteer-based Islamic organization. While we strive for excellence in our activities, volunteers participate at their own discretion and responsibility.',
+      islamicPrinciples: 'All activities and interactions within Ansaru Youth must respect Islamic teachings and values. In all our efforts, we seek Allah\'s guidance and strive to earn His pleasure through service to the Muslim community.'
+    }
   }
 };

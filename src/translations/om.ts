@@ -1,25 +1,83 @@
 
 export const om = {
+  common: {
+    loading: 'Fe\'aa jira...',
+    error: 'Dogoggora',
+    success: 'Milkaa\'ina',
+    submit: 'Galchi',
+    cancel: 'Dhiisi',
+    save: 'Olkaa\'i',
+    delete: 'Balleessi',
+    edit: 'Jijjiiri',
+    view: 'Ilaali',
+    close: 'Cufii',
+    back: 'Duubatti',
+    next: 'Itti aanu',
+    previous: 'Duraa',
+    search: 'Barbaadi',
+    filter: 'Calaluu',
+    sort: 'Tartiibii',
+    refresh: 'Haaromsi',
+    export: 'Alergii',
+    import: 'Galchi',
+    download: 'Buufadhu',
+    upload: 'Ol kaa\'i',
+    print: 'Maxxansi',
+    share: 'Qoodi',
+    copy: 'Garagalchi',
+    paste: 'Maxxansi',
+    cut: 'Muri',
+    undo: 'Dheebi',
+    redo: 'Irra deebi\'i',
+    select: 'Filadhu',
+    selectAll: 'Hunda Filadhu',
+    clear: 'Qulqulleessi',
+    reset: 'Jalqaba irra deebi\'i',
+    apply: 'Raawwadhu',
+    confirm: 'Mirkaneessi',
+    approve: 'Fudhadhu',
+    reject: 'Didduu',
+    accept: 'Fudhadhu',
+    decline: 'Didduu'
+  },
+  nav: {
+    home: 'Mana',
+    about: 'Waa\'ee',
+    services: 'Tajaajila',
+    contact: 'Qunnamtii',
+    blog: 'Blog',
+    news: 'Oduu',
+    events: 'Taateewwan',
+    gallery: 'Suuraa',
+    team: 'Garee',
+    careers: 'Hojii',
+    support: 'Gargaarsa',
+    faq: 'Gaaffii',
+    privacy: 'Icciitii',
+    terms: 'Haala',
+    login: 'Seeni',
+    register: 'Galmaa\'i',
+    logout: 'Ba\'i',
+    profile: 'Seenaa',
+    settings: 'Qindaa\'ina',
+    dashboard: 'Gabatee',
+    joinUs: 'Nu waliin makamaa',
+    teamStructure: 'Caasaa Garee',
+    application: 'Iyyannoo',
+    admin: 'Bulchiinsa'
+  },
   navigation: {
     home: "← Ansaar Dargaggoota",
     privacy: "Icciitii",
     terms: "Haala",
     application: "Iyyannoo"
   },
-  cookies: {
-    title: "Hayyama Kookii",
-    message: "Iyyannoo kee qabuu fi muuxannoo kee fooyyessuuf kookii fayyadamna. Itti fuufuudhaan, kookii fayyadamuuf hayyama kennita.",
-    accept: "Fudhadhu",
-    decline: "Didduu"
-  },
-  draft: {
-    saved: "Qabatamee kadhame!",
-    restored: "Qabatameen deebifame",
-    clear: "Qabatame Qulqulleessi"
-  },
-  payment: {
-    notice: "💰 Bilisaan Iyyannoo - $0.00",
-    description: "Iyyannoon kun guutumaan guutuutti bilisaa dha. Kaffaltiin hin barbaachisu."
+  home: {
+    title: 'Baga nagaan dhuftan Ansaar Dargaggoota',
+    subtitle: 'Diin tajaajiluu fi deddeebiin',
+    description: 'Hawaasa Musulmoota dargaggootaa addunyaa irratti gatii Islaamaa fi tajaajila hawaasaatiin dhiibbaa gaarii uumuuf kutatan waliin makamaa.',
+    joinNow: 'Ergamaa Keenya Waliin Makamaa',
+    learnMore: 'Dabalataan Barbaadi'
   },
   applicationForm: {
     title: "Ansaar Dargaggoota Waliin Makamuu",
@@ -80,6 +138,21 @@ export const om = {
       required: "Kun barbaachisaa dha",
       selectAtLeastOne: "Yoo xiqqaate bakka tokko filadhu"
     }
+  },
+  payment: {
+    notice: "💰 Bilisaan Iyyannoo - $0.00",
+    description: "Iyyannoon kun guutumaan guutuutti bilisaa dha. Kaffaltiin hin barbaachisu."
+  },
+  cookies: {
+    title: "Hayyama Kookii",
+    message: "Iyyannoo kee qabuu fi muuxannoo kee fooyyessuuf kookii fayyadamna. Itti fuufuudhaan, kookii fayyadamuuf hayyama kennita.",
+    accept: "Fudhadhu",
+    decline: "Didduu"
+  },
+  draft: {
+    saved: "Qabatamee kadhame!",
+    restored: "Qabatameen deebifame",
+    clear: "Qabatame Qulqulleessi"
   },
   privacy: {
     title: "Sirna Icciitii",
