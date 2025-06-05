@@ -19,19 +19,36 @@ interface MobileHeaderProps {
 const MobileHeader = ({ onMenuToggle, isMenuOpen }: MobileHeaderProps) => {
   const { t, currentLanguage, changeLanguage } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+      
+      // Header visibility logic
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolling down & past threshold - hide header
+        setIsVisible(false);
+      } else {
+        // Scrolling up or at top - show header
+        setIsVisible(true);
+      }
+      
+      // Background blur logic
+      setIsScrolled(currentScrollY > 20);
+      setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <header 
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 lg:hidden ${
+        isVisible ? 'translate-y-0' : '-translate-y-full'
+      } ${
         isScrolled 
           ? 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-200/50' 
           : 'bg-white/90 backdrop-blur-sm'
@@ -44,7 +61,7 @@ const MobileHeader = ({ onMenuToggle, isMenuOpen }: MobileHeaderProps) => {
             variant="ghost"
             size="icon"
             onClick={onMenuToggle}
-            className={`lg:hidden transition-all duration-200 hover:bg-green-100 ${
+            className={`transition-all duration-200 hover:bg-green-100 active:scale-95 ${
               isMenuOpen ? 'bg-green-100' : ''
             }`}
           >
@@ -78,7 +95,7 @@ const MobileHeader = ({ onMenuToggle, isMenuOpen }: MobileHeaderProps) => {
               <Button 
                 variant="outline" 
                 size="sm"
-                className="h-9 px-2 sm:px-3 border-gray-300 hover:bg-green-50 hover:border-green-300"
+                className="h-9 px-2 sm:px-3 border-gray-300 hover:bg-green-50 hover:border-green-300 active:scale-95 transition-all duration-200"
               >
                 <Globe className="h-4 w-4 mr-1 sm:mr-2" />
                 <span className="hidden sm:inline">
@@ -95,7 +112,7 @@ const MobileHeader = ({ onMenuToggle, isMenuOpen }: MobileHeaderProps) => {
                 <DropdownMenuItem
                   key={language.code}
                   onClick={() => changeLanguage(language.code)}
-                  className={`cursor-pointer text-sm ${
+                  className={`cursor-pointer text-sm transition-colors duration-200 ${
                     currentLanguage === language.code ? 'bg-green-50 text-green-600' : ''
                   }`}
                 >

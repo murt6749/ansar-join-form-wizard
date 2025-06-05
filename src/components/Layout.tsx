@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import MobileHeader from './MobileHeader';
 import MobileSidebar from './MobileSidebar';
+import BottomNavigation from './BottomNavigation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -45,10 +46,13 @@ const Layout = ({ children, showSidebar = true }: LayoutProps) => {
         />
       )}
 
-      {/* Main content with mobile header spacing */}
-      <main className={`flex-1 w-full ${showSidebar ? 'lg:ml-64' : ''} ${showSidebar ? 'pt-16 lg:pt-0' : ''}`}>
+      {/* Main content with proper spacing for mobile header and bottom nav */}
+      <main className={`flex-1 w-full ${showSidebar ? 'lg:ml-64' : ''} ${showSidebar ? 'pt-16 lg:pt-0 pb-20 md:pb-0' : ''}`}>
         {children}
       </main>
+
+      {/* Bottom Navigation - Mobile only */}
+      {showSidebar && <BottomNavigation />}
     </div>
   );
 };
