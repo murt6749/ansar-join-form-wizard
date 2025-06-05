@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
-import { Menu } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import MobileHeader from './MobileHeader';
+import MobileSidebar from './MobileSidebar';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,18 +16,18 @@ const Layout = ({ children, showSidebar = true }: LayoutProps) => {
     setMobileSidebarOpen(!mobileSidebarOpen);
   };
 
+  const closeMobileSidebar = () => {
+    setMobileSidebarOpen(false);
+  };
+
   return (
-    <div className="min-h-screen flex w-full">
-      {/* Mobile sidebar toggle button */}
+    <div className="min-h-screen flex w-full bg-gray-50">
+      {/* Mobile Header - Fixed at top */}
       {showSidebar && (
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleMobileSidebar}
-          className="lg:hidden fixed top-4 left-4 z-50 bg-white/80 backdrop-blur shadow-md"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
+        <MobileHeader 
+          onMenuToggle={toggleMobileSidebar}
+          isMenuOpen={mobileSidebarOpen}
+        />
       )}
 
       {/* Desktop sidebar - always visible on large screens */}
@@ -37,25 +37,16 @@ const Layout = ({ children, showSidebar = true }: LayoutProps) => {
         </div>
       )}
 
-      {/* Mobile sidebar - shown/hidden based on state */}
+      {/* Mobile sidebar */}
       {showSidebar && (
-        <div 
-          className={`fixed inset-0 z-40 transform transition-transform duration-300 lg:hidden ${
-            mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          <div 
-            className="absolute inset-0 bg-gray-600 bg-opacity-75"
-            onClick={toggleMobileSidebar}
-          />
-          <div className="relative">
-            <Sidebar />
-          </div>
-        </div>
+        <MobileSidebar 
+          isOpen={mobileSidebarOpen}
+          onClose={closeMobileSidebar}
+        />
       )}
 
-      {/* Main content */}
-      <main className={`flex-1 ${showSidebar ? 'lg:ml-64' : ''} w-full`}>
+      {/* Main content with mobile header spacing */}
+      <main className={`flex-1 w-full ${showSidebar ? 'lg:ml-64' : ''} ${showSidebar ? 'pt-16 lg:pt-0' : ''}`}>
         {children}
       </main>
     </div>
